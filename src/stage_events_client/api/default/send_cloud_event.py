@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Send structured CloudEvents and validate API responses."""
+
 from http import HTTPStatus
-from typing import Any
+from typing import Annotated, Any
 
 import httpx
 from eoap_problems_registry import (
@@ -28,6 +30,7 @@ from eoap_problems_registry import (
     MissingRequestHeader,
     MissingRequestParameter,
 )
+from pydantic import Field, TypeAdapter
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
@@ -76,9 +79,7 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response_400(
-    data: object,
-) -> (
+ProblemResponse = (
     BadRequest
     | InvalidBodyPropertyFormat
     | InvalidBodyPropertyValue
@@ -89,28 +90,23 @@ def _parse_response_400(
     | MissingBodyProperty
     | MissingRequestHeader
     | MissingRequestParameter
-):
+)
+
+
+def _parse_response_400(data: object) -> ProblemResponse:
+    """Validate a problem response against the documented models in order.
+
+    Raises:
+        TypeError: If the response is not a JSON object.
+        ValueError: If no documented problem model accepts the response.
+    """
     if not isinstance(data, dict):
         raise TypeError()
 
-    response_types = (
-        BadRequest,
-        InvalidBodyPropertyFormat,
-        InvalidBodyPropertyValue,
-        InvalidParameters,
-        InvalidRequestHeaderFormat,
-        InvalidRequestParameterFormat,
-        InvalidRequestParameterValue,
-        MissingBodyProperty,
-        MissingRequestHeader,
+    response_adapter: TypeAdapter[ProblemResponse] = TypeAdapter(
+        Annotated[ProblemResponse, Field(union_mode="left_to_right")]
     )
-    for response_type in response_types:
-        try:
-            return response_type.model_validate(data)
-        except (TypeError, ValueError, AttributeError, KeyError):
-            pass
-
-    return MissingRequestParameter.model_validate(data)
+    return response_adapter.validate_python(data)
 
 
 def _parse_response(

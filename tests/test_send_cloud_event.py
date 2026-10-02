@@ -19,7 +19,8 @@ from http import HTTPStatus
 from zoneinfo import ZoneInfo
 
 import httpx
-from eoap_problems_registry import MissingRequestHeader
+from eoap_problems_registry import BadRequest, MissingRequestHeader, MissingRequestParameter
+from pydantic import ValidationError
 
 from stage_events_client import errors
 from stage_events_client.api.default import send_cloud_event
@@ -48,9 +49,7 @@ class SendCloudEventTests(unittest.TestCase):
             base_url="https://events.example.test",
             transport=httpx.MockTransport(handler),
         )
-        client = Client(base_url="https://events.example.test").set_httpx_client(
-            httpx_client
-        )
+        client = Client(base_url="https://events.example.test").set_httpx_client(httpx_client)
 
         parsed = send_cloud_event.sync(client=client, body=submitted_event())
 
@@ -69,9 +68,7 @@ class SendCloudEventTests(unittest.TestCase):
             base_url="https://events.example.test",
             transport=httpx.MockTransport(handler),
         )
-        client = Client(base_url="https://events.example.test").set_httpx_client(
-            httpx_client
-        )
+        client = Client(base_url="https://events.example.test").set_httpx_client(httpx_client)
 
         response = send_cloud_event.sync_detailed(
             client=client,
@@ -84,9 +81,7 @@ class SendCloudEventTests(unittest.TestCase):
         self.assertEqual(captured[0].method, "POST")
         self.assertEqual(captured[0].url.path, "/cloud-events")
         self.assertEqual(captured[0].headers["X-Kafka-Topic"], "workflow-events")
-        self.assertEqual(
-            captured[0].headers["Content-Type"], "application/cloudevents+json"
-        )
+        self.assertEqual(captured[0].headers["Content-Type"], "application/cloudevents+json")
         self.assertEqual(json.loads(captured[0].content)["type"], "submitted")
         httpx_client.close()
 
@@ -96,19 +91,13 @@ class SendCloudEventTests(unittest.TestCase):
             "status": 400,
             "title": "Missing request header",
             "detail": "The request is missing an expected HTTP request header.",
-            "errors": [
-                {"detail": "X-Kafka-Topic is required", "header": "X-Kafka-Topic"}
-            ],
+            "errors": [{"detail": "X-Kafka-Topic is required", "header": "X-Kafka-Topic"}],
         }
         transport = httpx.MockTransport(
             lambda request: httpx.Response(400, json=problem, request=request)
         )
-        httpx_client = httpx.Client(
-            base_url="https://events.example.test", transport=transport
-        )
-        client = Client(base_url="https://events.example.test").set_httpx_client(
-            httpx_client
-        )
+        httpx_client = httpx.Client(base_url="https://events.example.test", transport=transport)
+        client = Client(base_url="https://events.example.test").set_httpx_client(httpx_client)
 
         parsed = send_cloud_event.sync(
             client=client,
@@ -121,6 +110,46 @@ class SendCloudEventTests(unittest.TestCase):
         assert errors is not None
         self.assertEqual(errors[0].header, "X-Kafka-Topic")
         httpx_client.close()
+
+    def test_sync_parses_first_and_last_documented_problem_types(self) -> None:
+        for problem_type in (BadRequest, MissingRequestParameter):
+            with self.subTest(problem_type=problem_type.__name__):
+                problem = problem_type()
+                transport = httpx.MockTransport(
+                    lambda request, problem=problem: httpx.Response(
+                        400, json=problem.model_dump(mode="json"), request=request
+                    )
+                )
+                with httpx.Client(
+                    base_url="https://events.example.test", transport=transport
+                ) as httpx_client:
+                    client = Client(base_url="https://events.example.test").set_httpx_client(
+                        httpx_client
+                    )
+                    parsed = send_cloud_event.sync(client=client, body=submitted_event())
+
+                self.assertIsInstance(parsed, problem_type)
+                self.assertEqual(parsed, problem)
+
+    def test_sync_rejects_invalid_problem_responses(self) -> None:
+        for payload, exception_type in (
+            ([], TypeError),
+            ({"type": "https://example.test/unknown-problem"}, ValidationError),
+        ):
+            with self.subTest(payload=payload):
+                transport = httpx.MockTransport(
+                    lambda request, payload=payload: httpx.Response(
+                        400, json=payload, request=request
+                    )
+                )
+                with httpx.Client(
+                    base_url="https://events.example.test", transport=transport
+                ) as httpx_client:
+                    client = Client(base_url="https://events.example.test").set_httpx_client(
+                        httpx_client
+                    )
+                    with self.assertRaises(exception_type):
+                        send_cloud_event.sync(client=client, body=submitted_event())
 
     def test_unexpected_status_can_return_none(self) -> None:
         response = httpx.Response(503, content=b"unavailable")
@@ -156,9 +185,7 @@ class AsyncSendCloudEventTests(unittest.IsolatedAsyncioTestCase):
             base_url="https://events.example.test",
             transport=httpx.MockTransport(handler),
         )
-        client = Client(base_url="https://events.example.test").set_async_httpx_client(
-            httpx_client
-        )
+        client = Client(base_url="https://events.example.test").set_async_httpx_client(httpx_client)
 
         parsed = await send_cloud_event.asyncio(
             client=client,

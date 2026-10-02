@@ -26,13 +26,9 @@ class SharedTypesTests(unittest.TestCase):
 
     def test_file_converts_to_httpx_tuple(self) -> None:
         payload = BytesIO(b"content")
-        upload = File(
-            payload=payload, file_name="result.json", mime_type="application/json"
-        )
+        upload = File(payload=payload, file_name="result.json", mime_type="application/json")
 
-        self.assertEqual(
-            upload.to_tuple(), ("result.json", payload, "application/json")
-        )
+        self.assertEqual(upload.to_tuple(), ("result.json", payload, "application/json"))
 
     def test_response_holds_raw_and_parsed_values(self) -> None:
         response = Response(
