@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Terradue" /><link rel="canonical" href="https://terradue.github.io/schemas/python-api/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Python API - SEDA APIs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../styles/css/app.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Python API";
+        var mkdocs_page_input_path = "python-api.md";
+        var mkdocs_page_url = "/schemas/python-api/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../imgs/icon-eoap.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Events MATE</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Python API</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-a-client">Create a client</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#construct-an-event">Construct an event</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#send-an-event-synchronously">Send an event synchronously</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-kafka-topic">Optional Kafka topic</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#inspect-the-complete-response">Inspect the complete response</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#custom-endpoint-path">Custom endpoint path</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#async-usage">Async usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#response-and-error-handling">Response and error handling</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#client-configuration">Client configuration</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#derive-an-updated-client">Derive an updated client</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#supply-an-httpx-client">Supply an HTTPX client</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../c4/class/schemas/openapi.html">OpenAPI</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">SEDA APIs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Events MATE</li>
+      <li class="breadcrumb-item active">Python API</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/schemas/edit/master/docs/python-api.md">Edit on Terradue/schemas</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="python-api">Python API</h1>
+<p>The <code>stage-events-client</code> package provides Pydantic event models and synchronous
+and asynchronous HTTPX-based clients for sending structured CloudEvents to the
+Stage Events API.</p>
+<h2 id="installation">Installation</h2>
+<p>Install the core Python library with:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><span class="go">python -m pip install stage-events-client</span>
+</span></code></pre></div>
+<p>Python 3.10 or newer is required. The optional <code>[cli]</code> extra is only needed for
+the <a href="../cli/"><code>send-stage-event</code></a> command and is not required when using the
+Python API.</p>
+<h2 id="create-a-client">Create a client</h2>
+<p>Use <code>AuthenticatedClient</code> when the endpoint requires a bearer token:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-1-1"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthenticatedClient</span>
+</span><span id="__span-1-2">
+</span><span id="__span-1-3"><span class="n">client</span> <span class="o">=</span> <span class="n">AuthenticatedClient</span><span class="p">(</span>
+</span><span id="__span-1-4">    <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://events.example.com"</span><span class="p">,</span>
+</span><span id="__span-1-5">    <span class="n">token</span><span class="o">=</span><span class="s2">"your-bearer-token"</span><span class="p">,</span>
+</span><span id="__span-1-6"><span class="p">)</span>
+</span></code></pre></div>
+<p>The default authentication header is:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-2-1">Authorization: Bearer your-bearer-token
+</span></code></pre></div>
+<p>Use <code>Client</code> for an endpoint that does not require authentication:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-3-1"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+</span><span id="__span-3-2">
+</span><span id="__span-3-3"><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">"https://events.example.com"</span><span class="p">)</span>
+</span></code></pre></div>
+<p>The endpoint functions use <code>/cloud-events</code> as their default request path, so
+<code>base_url</code> normally contains only the scheme, host, and any common API prefix.</p>
+<h2 id="construct-an-event">Construct an event</h2>
+<p>Every supported event has a CloudEvent model and a corresponding data model in
+<code>stage_events_client.models</code>. The following example constructs a submitted
+event by instantiating both models and setting their fields directly:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-4-1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+</span><span id="__span-4-2">
+</span><span id="__span-4-3"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubmittedCloudEvent</span><span class="p">,</span> <span class="n">SubmittedData</span>
+</span><span id="__span-4-4">
+</span><span id="__span-4-5"><span class="n">subject</span> <span class="o">=</span> <span class="s2">"workflows:2f660c57:example-workflow"</span>
+</span><span id="__span-4-6">
+</span><span id="__span-4-7"><span class="n">event_data</span> <span class="o">=</span> <span class="n">SubmittedData</span><span class="p">(</span>
+</span><span id="__span-4-8">    <span class="n">namespace</span><span class="o">=</span><span class="s2">"workflows"</span><span class="p">,</span>
+</span><span id="__span-4-9">    <span class="n">time</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+</span><span id="__span-4-10"><span class="p">)</span>
+</span><span id="__span-4-11">
+</span><span id="__span-4-12"><span class="n">event</span> <span class="o">=</span> <span class="n">SubmittedCloudEvent</span><span class="p">(</span>
+</span><span id="__span-4-13">    <span class="n">source</span><span class="o">=</span><span class="s2">"workflows:example-process:submit"</span><span class="p">,</span>
+</span><span id="__span-4-14">    <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
+</span><span id="__span-4-15">    <span class="n">partitionkey</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
+</span><span id="__span-4-16">    <span class="n">data</span><span class="o">=</span><span class="n">event_data</span><span class="p">,</span>
+</span><span id="__span-4-17"><span class="p">)</span>
+</span></code></pre></div>
+<p><code>type</code> does not need to be supplied because each event model defines its own
+value. In this example it defaults to <code>submitted</code>.</p>
+<p>Models validate event-specific fields before a request is sent. This includes
+timezone-aware timestamps, semantic versions, status values, and GeoJSON
+structures where applicable.</p>
+<p>The supported event models are:</p>
+<table>
+<thead>
+<tr>
+<th>Event type</th>
+<th>CloudEvent model</th>
+<th>Data model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calendar-event</code></td>
+<td><code>CalendarCloudEvent</code></td>
+<td><code>CalendarData</code></td>
+</tr>
+<tr>
+<td><code>submitted</code></td>
+<td><code>SubmittedCloudEvent</code></td>
+<td><code>SubmittedData</code></td>
+</tr>
+<tr>
+<td><code>dismissed</code></td>
+<td><code>DismissedCloudEvent</code></td>
+<td><code>DismissedData</code></td>
+</tr>
+<tr>
+<td><code>prepared</code></td>
+<td><code>PreparedCloudEvent</code></td>
+<td><code>PreparedData</code></td>
+</tr>
+<tr>
+<td><code>completed</code></td>
+<td><code>CompletedCloudEvent</code></td>
+<td><code>CompletedData</code></td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td><code>FailedCloudEvent</code></td>
+<td><code>FailedData</code></td>
+</tr>
+<tr>
+<td><code>piped</code></td>
+<td><code>PipedCloudEvent</code></td>
+<td><code>PipedData</code></td>
+</tr>
+<tr>
+<td><code>staged</code></td>
+<td><code>StagedCloudEvent</code></td>
+<td><code>StagedData</code></td>
+</tr>
+<tr>
+<td><code>ordered</code></td>
+<td><code>OrderedCloudEvent</code></td>
+<td><code>OrderedData</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="send-an-event-synchronously">Send an event synchronously</h2>
+<p>Import the endpoint module and call <code>sync</code>:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-5-1"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client.api.default</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_cloud_event</span>
+</span><span id="__span-5-2">
+</span><span id="__span-5-3"><span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+</span><span id="__span-5-4">    <span class="n">result</span> <span class="o">=</span> <span class="n">send_cloud_event</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span>
+</span><span id="__span-5-5">        <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+</span><span id="__span-5-6">        <span class="n">body</span><span class="o">=</span><span class="n">event</span><span class="p">,</span>
+</span><span id="__span-5-7">        <span class="n">x_kafka_topic</span><span class="o">=</span><span class="s2">"workflows.2f660c57.submitted"</span><span class="p">,</span>
+</span><span id="__span-5-8">    <span class="p">)</span>
+</span><span id="__span-5-9">
+</span><span id="__span-5-10"><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span></code></pre></div>
+<p>The context manager closes the underlying <code>httpx.Client</code> after the request.
+Create a client once and keep its context open when sending multiple events:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-6-1"><span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+</span><span id="__span-6-2">    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+</span><span id="__span-6-3">        <span class="n">send_cloud_event</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="optional-kafka-topic">Optional Kafka topic</h3>
+<p><code>x_kafka_topic</code> is optional. When it is omitted or set to <code>None</code>, the client
+does not add an <code>X-Kafka-Topic</code> header:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-7-1"><span class="n">result</span> <span class="o">=</span> <span class="n">send_cloud_event</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span>
+</span><span id="__span-7-2">    <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+</span><span id="__span-7-3">    <span class="n">body</span><span class="o">=</span><span class="n">event</span><span class="p">,</span>
+</span><span id="__span-7-4"><span class="p">)</span>
+</span></code></pre></div>
+<p>When supplied, topic names accepted by the API follow the form
+<code>{namespace}.{workflow-uid}.{event-suffix}</code>. Calendar topics use a duration and
+<code>.calendar</code>, such as <code>workflows.2f660c57.10m.calendar</code>.</p>
+<h2 id="inspect-the-complete-response">Inspect the complete response</h2>
+<p><code>sync</code> returns only the parsed response. Use <code>sync_detailed</code> to inspect the
+status, headers, raw content, and parsed value:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-8-1"><span class="n">response</span> <span class="o">=</span> <span class="n">send_cloud_event</span><span class="o">.</span><span class="n">sync_detailed</span><span class="p">(</span>
+</span><span id="__span-8-2">    <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+</span><span id="__span-8-3">    <span class="n">body</span><span class="o">=</span><span class="n">event</span><span class="p">,</span>
+</span><span id="__span-8-4">    <span class="n">x_kafka_topic</span><span class="o">=</span><span class="s2">"workflows.2f660c57.submitted"</span><span class="p">,</span>
+</span><span id="__span-8-5"><span class="p">)</span>
+</span><span id="__span-8-6">
+</span><span id="__span-8-7"><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+</span><span id="__span-8-8"><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+</span><span id="__span-8-9"><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</span><span id="__span-8-10"><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">parsed</span><span class="p">)</span>
+</span></code></pre></div>
+<p>The returned <code>stage_events_client.types.Response</code> has these attributes:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status_code</code></td>
+<td>Response status as an <code>http.HTTPStatus</code>.</td>
+</tr>
+<tr>
+<td><code>headers</code></td>
+<td>HTTP response headers.</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td>Raw response bytes.</td>
+</tr>
+<tr>
+<td><code>parsed</code></td>
+<td>Parsed success value, problem model, or <code>None</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>A successful <code>200</code> response is parsed as a string. A documented <code>400</code> response
+is parsed into the corresponding problem-details model.</p>
+<h3 id="custom-endpoint-path">Custom endpoint path</h3>
+<p>The detailed functions accept a custom relative path when the service does not
+expose the default <code>/cloud-events</code> endpoint:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-9-1"><span class="n">response</span> <span class="o">=</span> <span class="n">send_cloud_event</span><span class="o">.</span><span class="n">sync_detailed</span><span class="p">(</span>
+</span><span id="__span-9-2">    <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+</span><span id="__span-9-3">    <span class="n">body</span><span class="o">=</span><span class="n">event</span><span class="p">,</span>
+</span><span id="__span-9-4">    <span class="n">path</span><span class="o">=</span><span class="s2">"/hooks/cloud-events"</span><span class="p">,</span>
+</span><span id="__span-9-5"><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="async-usage">Async usage</h2>
+<p>Use <code>asyncio</code> to return the parsed value or <code>asyncio_detailed</code> to return the
+complete response:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-10-1"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span id="__span-10-2">
+</span><span id="__span-10-3"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthenticatedClient</span>
+</span><span id="__span-10-4"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client.api.default</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_cloud_event</span>
+</span><span id="__span-10-5">
+</span><span id="__span-10-6">
+</span><span id="__span-10-7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-10-8">    <span class="n">client</span> <span class="o">=</span> <span class="n">AuthenticatedClient</span><span class="p">(</span>
+</span><span id="__span-10-9">        <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://events.example.com"</span><span class="p">,</span>
+</span><span id="__span-10-10">        <span class="n">token</span><span class="o">=</span><span class="s2">"your-bearer-token"</span><span class="p">,</span>
+</span><span id="__span-10-11">    <span class="p">)</span>
+</span><span id="__span-10-12">
+</span><span id="__span-10-13">    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+</span><span id="__span-10-14">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send_cloud_event</span><span class="o">.</span><span class="n">asyncio</span><span class="p">(</span>
+</span><span id="__span-10-15">            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+</span><span id="__span-10-16">            <span class="n">body</span><span class="o">=</span><span class="n">event</span><span class="p">,</span>
+</span><span id="__span-10-17">            <span class="n">x_kafka_topic</span><span class="o">=</span><span class="s2">"workflows.2f660c57.submitted"</span><span class="p">,</span>
+</span><span id="__span-10-18">        <span class="p">)</span>
+</span><span id="__span-10-19">
+</span><span id="__span-10-20">    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span id="__span-10-21">
+</span><span id="__span-10-22">
+</span><span id="__span-10-23"><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</span></code></pre></div>
+<p>Do not use the same client instance in synchronous and asynchronous context
+managers at the same time.</p>
+<h2 id="response-and-error-handling">Response and error handling</h2>
+<p>Set <code>raise_on_unexpected_status=True</code> to raise <code>UnexpectedStatus</code> when the API
+returns a status that is not documented by the OpenAPI definition:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-11-1"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthenticatedClient</span>
+</span><span id="__span-11-2"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnexpectedStatus</span>
+</span><span id="__span-11-3">
+</span><span id="__span-11-4"><span class="n">client</span> <span class="o">=</span> <span class="n">AuthenticatedClient</span><span class="p">(</span>
+</span><span id="__span-11-5">    <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://events.example.com"</span><span class="p">,</span>
+</span><span id="__span-11-6">    <span class="n">token</span><span class="o">=</span><span class="s2">"your-bearer-token"</span><span class="p">,</span>
+</span><span id="__span-11-7">    <span class="n">raise_on_unexpected_status</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-11-8"><span class="p">)</span>
+</span><span id="__span-11-9">
+</span><span id="__span-11-10"><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-11-11">    <span class="n">result</span> <span class="o">=</span> <span class="n">send_cloud_event</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
+</span><span id="__span-11-12"><span class="k">except</span> <span class="n">UnexpectedStatus</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span id="__span-11-13">    <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+</span><span id="__span-11-14">    <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</span></code></pre></div>
+<p>When this option is <code>False</code>, an unexpected status is parsed as <code>None</code>.
+Documented API errors are returned as problem models rather than raised as
+<code>UnexpectedStatus</code>:</p>
+<p>For example, a missing header response can be handled with its concrete problem
+type:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-12-1"><span class="kn">from</span><span class="w"> </span><span class="nn">eoap_problems_registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingRequestHeader</span>
+</span><span id="__span-12-2">
+</span><span id="__span-12-3"><span class="n">result</span> <span class="o">=</span> <span class="n">send_cloud_event</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
+</span><span id="__span-12-4">
+</span><span id="__span-12-5"><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">MissingRequestHeader</span><span class="p">):</span>
+</span><span id="__span-12-6">    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+</span></code></pre></div>
+<p>HTTPX exceptions such as <code>httpx.TimeoutException</code> and
+<code>httpx.RequestError</code> can still be raised for transport failures.</p>
+<h2 id="client-configuration">Client configuration</h2>
+<p>Both client classes support shared HTTP configuration:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-13-1"><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+</span><span id="__span-13-2">
+</span><span id="__span-13-3"><span class="kn">from</span><span class="w"> </span><span class="nn">stage_events_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthenticatedClient</span>
+</span><span id="__span-13-4">
+</span><span id="__span-13-5"><span class="n">client</span> <span class="o">=</span> <span class="n">AuthenticatedClient</span><span class="p">(</span>
+</span><span id="__span-13-6">    <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://events.example.com"</span><span class="p">,</span>
+</span><span id="__span-13-7">    <span class="n">token</span><span class="o">=</span><span class="s2">"your-bearer-token"</span><span class="p">,</span>
+</span><span id="__span-13-8">    <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">"X-Correlation-ID"</span><span class="p">:</span> <span class="s2">"request-id"</span><span class="p">},</span>
+</span><span id="__span-13-9">    <span class="n">cookies</span><span class="o">=</span><span class="p">{</span><span class="s2">"session"</span><span class="p">:</span> <span class="s2">"value"</span><span class="p">},</span>
+</span><span id="__span-13-10">    <span class="n">timeout</span><span class="o">=</span><span class="n">httpx</span><span class="o">.</span><span class="n">Timeout</span><span class="p">(</span><span class="mf">30.0</span><span class="p">),</span>
+</span><span id="__span-13-11">    <span class="n">verify_ssl</span><span class="o">=</span><span class="s2">"/path/to/ca-bundle.pem"</span><span class="p">,</span>
+</span><span id="__span-13-12">    <span class="n">follow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-13-13">    <span class="n">httpx_args</span><span class="o">=</span><span class="p">{</span><span class="s2">"proxy"</span><span class="p">:</span> <span class="s2">"http://proxy.example.com:8080"</span><span class="p">},</span>
+</span><span id="__span-13-14"><span class="p">)</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base_url</code></td>
+<td>Base URL used for relative endpoint paths.</td>
+</tr>
+<tr>
+<td><code>headers</code></td>
+<td>Headers included with every request.</td>
+</tr>
+<tr>
+<td><code>cookies</code></td>
+<td>Cookies included with every request.</td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td>HTTPX timeout configuration.</td>
+</tr>
+<tr>
+<td><code>verify_ssl</code></td>
+<td>Boolean, CA bundle path, or <code>ssl.SSLContext</code>.</td>
+</tr>
+<tr>
+<td><code>follow_redirects</code></td>
+<td>Whether HTTP redirects are followed.</td>
+</tr>
+<tr>
+<td><code>httpx_args</code></td>
+<td>Additional <code>httpx.Client</code> and <code>httpx.AsyncClient</code> arguments.</td>
+</tr>
+<tr>
+<td><code>raise_on_unexpected_status</code></td>
+<td>Raise instead of returning <code>None</code> for undocumented statuses.</td>
+</tr>
+</tbody>
+</table>
+<p>TLS certificate verification is enabled by default. Setting <code>verify_ssl=False</code>
+disables server verification and should only be used in a controlled
+development environment.</p>
+<h3 id="derive-an-updated-client">Derive an updated client</h3>
+<p>The <code>with_*</code> methods return an updated client:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-14-1"><span class="n">client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">with_headers</span><span class="p">({</span><span class="s2">"X-Correlation-ID"</span><span class="p">:</span> <span class="s2">"new-request-id"</span><span class="p">})</span>
+</span><span id="__span-14-2"><span class="n">client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">with_cookies</span><span class="p">({</span><span class="s2">"session"</span><span class="p">:</span> <span class="s2">"new-value"</span><span class="p">})</span>
+</span><span id="__span-14-3"><span class="n">client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">with_timeout</span><span class="p">(</span><span class="n">httpx</span><span class="o">.</span><span class="n">Timeout</span><span class="p">(</span><span class="mf">10.0</span><span class="p">))</span>
+</span></code></pre></div>
+<h3 id="supply-an-httpx-client">Supply an HTTPX client</h3>
+<p>Use <code>set_httpx_client</code> or <code>set_async_httpx_client</code> to provide an existing HTTPX
+client:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-15-1"><span class="n">http_client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span>
+</span><span id="__span-15-2">    <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://events.example.com"</span><span class="p">,</span>
+</span><span id="__span-15-3">    <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+</span><span id="__span-15-4"><span class="p">)</span>
+</span><span id="__span-15-5"><span class="n">client</span><span class="o">.</span><span class="n">set_httpx_client</span><span class="p">(</span><span class="n">http_client</span><span class="p">)</span>
+</span></code></pre></div>
+<p>Supplying an HTTPX client overrides the generated client's base URL, headers,
+cookies, timeout, and TLS settings. Configure those values directly on the
+HTTPX instance.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cli/" class="btn btn-neutral float-right" title="CLI">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><a href="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square">Apache License, Version 2.0</a>, by <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/schemas/" class="fa fa-code-fork" style="color: #fcfcfc"> Terradue/schemas</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../cli/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../javascripts/config.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

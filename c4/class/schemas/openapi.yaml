@@ -1,0 +1,2126 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Stage Events
+  description: This API provides real-time stage events streaming capabilities.
+  contact:
+    name: Terradue
+    email: info@terradue.com
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.txt
+servers:
+  - description: Webhook exposed internal service
+    url: http://cloud-events-webhook-eventsource-svc:12000
+security:
+  - BearerToken: []
+paths:
+  /cloud-events:
+    post:
+      summary: Send CloudEvent.
+      description: |
+        Sends a structured-mode CloudEvent.
+
+        For more information, see [CloudEvents - Version 1.0.2](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md).
+      operationId: sendCloudEvent
+      parameters:
+        - $ref: '#/components/parameters/X-Kafka-Topic'
+      requestBody:
+        description: A structured-mode CloudEvent.
+        required: true
+        content:
+          application/cloudevents+json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CalendarCloudEvent'
+                - $ref: '#/components/schemas/SubmittedCloudEvent'
+                - $ref: '#/components/schemas/DismissedCloudEvent'
+                - $ref: '#/components/schemas/PreparedCloudEvent'
+                - $ref: '#/components/schemas/CompletedCloudEvent'
+                - $ref: '#/components/schemas/FailedCloudEvent'
+                - $ref: '#/components/schemas/PipedCloudEvent'
+                - $ref: '#/components/schemas/StagedCloudEvent'
+                - $ref: '#/components/schemas/OrderedCloudEvent'
+            examples:
+              Calendar:
+                $ref: '#/components/examples/Calendar'
+              Submitted:
+                $ref: '#/components/examples/Submitted'
+              Prepared:
+                $ref: '#/components/examples/Prepared'
+              Dismissed:
+                $ref: '#/components/examples/Dismissed'
+              Completed:
+                $ref: '#/components/examples/Completed'
+              Failed:
+                $ref: '#/components/examples/Failed'
+              Staged:
+                $ref: '#/components/examples/Staged'
+              Piped:
+                $ref: '#/components/examples/Piped'
+              Ordered:
+                $ref: '#/components/examples/Ordered'
+      responses:
+        '200':
+          $ref: '#/components/responses/WebhookOk'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+components:
+  securitySchemes:
+    BearerToken:
+      description: Bearer Token authentication
+      type: apiKey
+      name: Authorization
+      in: header
+  parameters:
+    X-Kafka-Topic:
+      name: X-Kafka-Topic
+      in: header
+      schema:
+        type: string
+        pattern: ^[^.]+\.[^.]+\.(\d+[hmsd]\.calendar|prepared|submitted|completed|failed|piped|staged|dismissed|ordered)$
+      required: true
+      description: |
+        The named resource that serves as a feed for messages.
+
+        Pattern is `{{workflow.namespace}}.{{workflow.uid}}.(\d+[hmsd]\.calendar|prepared|completed|failed|piped|staged|ordered)`, where:
+
+        | Topic                                                         | Semantic                                                                                            |
+        |---------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+        | `{{workflow.namespace}}.{{workflow.uid}}.\d+[hmsd].calendar`  | CWL and input parameters are wrapped w/ stage-in/out steps                                          |
+        | `{{workflow.namespace}}.{{workflow.uid}}.prepared`            | CWL and input parameters are wrapped w/ stage-in/out steps                                          |
+        | `{{workflow.namespace}}.{{workflow.uid}}.completed`           | Workflow completed its life cycle and CommandLineTools/Calrissian stderr/out logs are collected     |
+        | `{{workflow.namespace}}.{{workflow.uid}}.failed`              | Workflow failed during its life cycle and CommandLineTools/Calrissian stderr/out logs are collected |
+        | `{{workflow.namespace}}.{{workflow.uid}}.piped`               | Feature Collection is generated                                                                     |
+        | `{{workflow.namespace}}.{{workflow.uid}}.staged`              | Results are posted in Catalog via `stac-postman`                                                    |
+        | `{{workflow.namespace}}.{{workflow.uid}}.ordered`             | A STAC Item transitioned from `order:status=orderable` to `order:status=ordered`;                   |
+  schemas:
+    CalendarCloudEvent:
+      type: object
+      title: CalendarCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: calendar-event
+              default: calendar-event
+            data:
+              $ref: '#/components/schemas/CalendarData'
+              description: The event payload.
+    SubmittedCloudEvent:
+      type: object
+      title: SubmittedCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: submitted
+              default: submitted
+            data:
+              $ref: '#/components/schemas/SubmittedData'
+              description: The event payload.
+    DismissedCloudEvent:
+      type: object
+      title: DismissedCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: dismissed
+              default: dismissed
+            data:
+              $ref: '#/components/schemas/DismissedData'
+              description: The event payload.
+    PreparedCloudEvent:
+      type: object
+      title: PreparedCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: prepared
+              default: prepared
+            data:
+              $ref: '#/components/schemas/PreparedData'
+              description: The event payload.
+    CompletedCloudEvent:
+      type: object
+      title: CompletedCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: completed
+              default: completed
+            data:
+              $ref: '#/components/schemas/CompletedData'
+              description: The event payload.
+    FailedCloudEvent:
+      type: object
+      title: FailedCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: failed
+              default: failed
+            data:
+              $ref: '#/components/schemas/FailedData'
+              description: The event payload.
+    StagedCloudEvent:
+      type: object
+      title: StagedCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: staged
+              default: staged
+            data:
+              $ref: '#/components/schemas/StagedData'
+              description: The event payload.
+    PipedCloudEvent:
+      type: object
+      title: PipedCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: piped
+              default: piped
+            data:
+              $ref: '#/components/schemas/PipedData'
+              description: The event payload.
+    OrderedCloudEvent:
+      type: object
+      title: OrderedCloudEvent
+      allOf:
+        - $ref: '#/components/schemas/BaseCloudEvent'
+        - type: object
+          required:
+            - type
+            - data
+          properties:
+            type:
+              type: string
+              description: |
+                Contains a value describing the type of event related to the originating occurrence.
+              const: ordered
+              default: ordered
+            data:
+              $ref: '#/components/schemas/OrderedData'
+              description: The event payload.
+    BaseCloudEvent:
+      title: CloudEvent
+      type: object
+      required:
+        - source
+        - subject
+        - partitionkey
+      properties:
+        source:
+          type: string
+          pattern: ^[^:]+:[^:]+:[^:]+$
+          description: |
+            Identifies the context in which an event happened.
+
+            Pattern is `{workflow.namespace}}:{{workflow.annotations.eoap.ogc.org/id}}:{{steps.name}}`.
+        subject:
+          type: string
+          pattern: ^[^:]+:[^:]+:[^:]+$
+          description: |
+            The subject of the event in the context of the event producer (identified by `source`).
+
+            Pattern is `{{workflow.namespace}}:{{workflow.uid}}:{{workflow.name}}`.
+        partitionkey:
+          type: string
+          description: |
+            A partition key for the event, typically for the purposes of defining a causal relationship/grouping between multiple events.
+
+            _Implementors note_: set it equals to the subject by default.
+    BaseData:
+      title: BaseData
+      type: object
+      required:
+        - namespace
+      properties:
+        namespace:
+          type: string
+          description: The declarative region that provides a scope to the processes.
+        owner_id:
+          type:
+            - string
+            - 'null'
+          description: The unique Owner identifier to trace the member of the subscription that owns workflow.
+        properties:
+          type: object
+          additionalProperties: true
+          description: The properties that describe the process.
+        priority:
+          type: string
+          description: The right to proceed before other executions.
+    CalendarData:
+      title: CalendarData
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          required:
+            - event_time
+            - start_time
+            - end_time
+          properties:
+            event_time:
+              type: string
+              format: date-time
+              description: The Argo Events event time, in ISO string format.
+            start_time:
+              type: string
+              format: date-time
+              description: The Start Time event, in ISO string format.
+            end_time:
+              type: string
+              format: date-time
+              description: The End Time event, in ISO string format.
+    SubmittedData:
+      title: SubmittedData
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          properties:
+            time:
+              type: string
+              format: date-time
+              description: The Argo Workflow submission time, in ISO string format.
+    DismissedStatus:
+      type: string
+      enum:
+        - Unknown
+        - Pending
+        - Running
+        - Succeeded
+        - Failed
+        - Error
+    DismissedData:
+      title: DismissedData
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          required:
+            - status
+          properties:
+            status:
+              $ref: '#/components/schemas/DismissedStatus'
+            time:
+              type: string
+              format: date-time
+              description: The Argo Workflow dismission time, in ISO string format.
+    PreparedData:
+      title: PreparedData
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          required:
+            - job_id
+            - process_id
+            - inputs
+          properties:
+            process_id:
+              type: string
+              description: The unique Process identifier inside the namespace.
+            process_version:
+              type: string
+              pattern: ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+              description: |
+                The Process version, according to the [Semantic Versioning 2.0.0](https://semver.org/) scheme.
+            job_id:
+              type: string
+              description: The unique Job identifier inside the namespace.
+            inputs:
+              type: object
+              additionalProperties: true
+              description: The dictionary that describes inputs identifiers with related values.
+    Usage:
+      type: object
+      description: Report of a process total used resources.
+      properties:
+        start_time:
+          type: string
+          format: date-time
+          description: |
+            The execution start time, in the date-time notation as defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6).
+          example: '2025-03-11T16:20:36Z'
+        finish_time:
+          type: string
+          format: date-time
+          description: |
+            The execution finish time, in the date-time notation as defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6).
+          example: '2025-03-11T16:23:17Z'
+        elapsed_hours:
+          type: number
+          format: double
+          description: The execution elapsed hour(s).
+          example: 0.04472222222222222
+        elapsed_seconds:
+          type: integer
+          format: int32
+          description: The execution elapsed second(s).
+          example: 161
+        cores_allowed:
+          type: number
+          format: double
+          description: The maximum number of Central Processing Unit cores to use.
+          example: 8
+        max_parallel_cpus:
+          type: integer
+          format: int32
+          description: The maximum number of used Central Processing Unit cores.
+          example: 7
+        total_cpu_hours:
+          type: number
+          format: double
+          description: The number of used Central Processing Unit cores per hour.
+          example: 0.21305555555555555
+        ram_mb_allowed:
+          type: number
+          format: double
+          description: The maximum amount of RAM to use, in MegaBytes.
+          example: 4000
+        total_ram_megabyte_hours:
+          type: number
+          format: double
+          description: The total size of the RAM used per hour for the execution, in MegaBytes.
+          example: 114.3833304177778
+        max_parallel_ram_megabytes:
+          type: number
+          format: double
+          example: 3758.0963839999995
+        total_disk_megabytes:
+          type: number
+          format: double
+          description: The total size of the Disk used per hour for the execution, in MegaBytes.
+          example: 2490.712061999999
+        max_parallel_tasks:
+          type: integer
+          format: int32
+          description: The maximum number of parallel executing tasks.
+        total_tasks:
+          type: integer
+          format: int32
+          description: The total number of executed tasks.
+          example: 25
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildUsage'
+          description: The executed tasks.
+          example:
+            - cpus: 1
+              ram_megabytes: 536.870912
+              disk_megabytes: 99.962848
+              exit_code: 0
+              name: node_crop_6
+              start_time: '2025-03-11T16:20:37Z'
+              finish_time: '2025-03-11T16:21:25Z'
+              elapsed_hours: 0.013333333333333334
+              elapsed_seconds: 48
+              ram_megabyte_hours: 7.158278826666667
+              cpu_hours: 0.013333333333333334
+    CompletedData:
+      title: CompletedData
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          required:
+            - job_id
+            - process_id
+            - usage
+            - outputs
+          properties:
+            process_id:
+              type: string
+              description: The unique Process identifier inside the namespace.
+            process_version:
+              type: string
+              pattern: ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+              description: |
+                The Process version, according to the [Semantic Versioning 2.0.0](https://semver.org/) scheme.
+            job_id:
+              type: string
+              description: The unique Job identifier inside the namespace.
+            usage:
+              $ref: '#/components/schemas/Usage'
+            outputs:
+              type: object
+              additionalProperties: true
+              description: The dictionary that describes outputs identifiers with related values.
+    ErrorDetail:
+      type: object
+      description: An object to provide explicit details on a problem towards an API consumer.
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: A granular description on the specific error related to a body property, query parameter, path parameters, and/or header.
+          maxLength: 4096
+        pointer:
+          type: string
+          description: A JSON Pointer to a specific request body property that is the source of error.
+          maxLength: 1024
+        parameter:
+          type: string
+          description: The name of the query or path parameter that is the source of error.
+          maxLength: 1024
+        header:
+          type: string
+          description: The name of the header that is the source of error.
+          maxLength: 1024
+        code:
+          type: string
+          description: A string containing additional provider specific codes to identify the error context.
+          maxLength: 50
+    Exception:
+      title: Exception Schema
+      description: |-
+        The `exception` object provides detailed information about an errors that occurred during an API call execution. This problem object conforms to the [RFC9457](https://www.rfc-editor.org/info/rfc9457) (formerly [RFC7807](https://tools.ietf.org/html/rfc7807)).
+        The object is extended with the following properties: - `code` - a string identifier to aid the provider team better understand the error - `errors` - and array of errors providing contextual information on the root cause of the problem
+        The `exception` referenced by this domain utilize a custom Terradue Problems Registry.
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          description: A URI reference that identifies the problem type.
+          format: uri
+          pattern: https://mate.terradue.com/.+
+          maxLength: 1024
+        status:
+          type: integer
+          description: The HTTP status code generated by the origin server for this occurrence of the problem.
+          format: int32
+          minimum: 100
+          maximum: 599
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+          maxLength: 1024
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          maxLength: 4096
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem. It may or may not yield further information if dereferenced.
+          maxLength: 1024
+        code:
+          type: string
+          description: An API specific error code aiding the provider team understand the error based on their own potential taxonomy or registry.
+          maxLength: 50
+        errors:
+          type: array
+          description: An array of error details to accompany a problem details response.
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+    FailedData:
+      title: FailedData
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          required:
+            - job_id
+            - process_id
+            - usage
+          properties:
+            process_id:
+              type: string
+              description: The unique Process identifier inside the namespace.
+            process_version:
+              type: string
+              pattern: ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+              description: |
+                The Process version, according to the [Semantic Versioning 2.0.0](https://semver.org/) scheme.
+            job_id:
+              type: string
+              description: The unique Job identifier inside the namespace.
+            exception:
+              $ref: '#/components/schemas/Exception'
+            usage:
+              $ref: '#/components/schemas/Usage'
+    BBox:
+      type: array
+      minItems: 4
+      items:
+        type: number
+    Point:
+      title: GeoJSON Point
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          const: Point
+        coordinates:
+          type: array
+          minItems: 2
+          items:
+            type: number
+        bbox:
+          $ref: '#/components/schemas/BBox'
+    LineString:
+      title: GeoJSON LineString
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          const: LineString
+        coordinates:
+          type: array
+          minItems: 2
+          items:
+            type: array
+            minItems: 2
+            items:
+              type: number
+        bbox:
+          $ref: '#/components/schemas/BBox'
+    Polygon:
+      title: GeoJSON Polygon
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          const: Polygon
+        coordinates:
+          type: array
+          items:
+            type: array
+            minItems: 4
+            items:
+              type: array
+              minItems: 2
+              items:
+                type: number
+        bbox:
+          $ref: '#/components/schemas/BBox'
+    MultiPoint:
+      title: GeoJSON MultiPoint
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          const: MultiPoint
+        coordinates:
+          type: array
+          items:
+            type: array
+            minItems: 2
+            items:
+              type: number
+        bbox:
+          $ref: '#/components/schemas/BBox'
+    MultiLineString:
+      title: GeoJSON MultiLineString
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          const: MultiLineString
+        coordinates:
+          type: array
+          items:
+            type: array
+            minItems: 2
+            items:
+              type: array
+              minItems: 2
+              items:
+                type: number
+        bbox:
+          $ref: '#/components/schemas/BBox'
+    MultiPolygon:
+      title: GeoJSON MultiPolygon
+      type: object
+      required:
+        - type
+        - coordinates
+      properties:
+        type:
+          type: string
+          const: MultiPolygon
+        coordinates:
+          type: array
+          items:
+            type: array
+            items:
+              type: array
+              minItems: 4
+              items:
+                type: array
+                minItems: 2
+                items:
+                  type: number
+        bbox:
+          $ref: '#/components/schemas/BBox'
+    GeometryCollection:
+      title: GeoJSON GeometryCollection
+      type: object
+      required:
+        - type
+        - geometries
+      properties:
+        type:
+          type: string
+          const: GeometryCollection
+        geometries:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/Point'
+              - $ref: '#/components/schemas/LineString'
+              - $ref: '#/components/schemas/Polygon'
+              - $ref: '#/components/schemas/MultiPoint'
+              - $ref: '#/components/schemas/MultiLineString'
+              - $ref: '#/components/schemas/MultiPolygon'
+        bbox:
+          $ref: '#/components/schemas/BBox'
+    Feature:
+      title: GeoJSON Feature
+      type: object
+      required:
+        - type
+        - properties
+        - geometry
+      properties:
+        type:
+          type: string
+          const: Feature
+        id:
+          oneOf:
+            - type: number
+            - type: string
+        properties:
+          oneOf:
+            - type: object
+            - type: 'null'
+        geometry:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/Point'
+            - $ref: '#/components/schemas/LineString'
+            - $ref: '#/components/schemas/Polygon'
+            - $ref: '#/components/schemas/MultiPoint'
+            - $ref: '#/components/schemas/MultiLineString'
+            - $ref: '#/components/schemas/MultiPolygon'
+            - $ref: '#/components/schemas/GeometryCollection'
+        bbox:
+          $ref: '#/components/schemas/BBox'
+    FeatureCollection:
+      title: GeoJSON FeatureCollection
+      type: object
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+        features:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/Feature'
+              - type: object
+        bbox:
+          type: array
+          minItems: 4
+          items:
+            type: number
+    StagedData:
+      title: StagedData
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          required:
+            - job_id
+            - process_id
+            - outputs
+          properties:
+            process_id:
+              type: string
+              description: The unique Process identifier inside the namespace.
+            process_version:
+              type: string
+              pattern: ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+              description: |
+                The Process version, according to the [Semantic Versioning 2.0.0](https://semver.org/) scheme.
+            job_id:
+              type: string
+              description: The unique Job identifier inside the namespace.
+            outputs:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/FeatureCollection'
+              description: The dictionary that describes outputs identifiers with related STAC Item value(s).
+    PipedData:
+      title: PipedData
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          required:
+            - job_id
+            - process_id
+            - entries
+          properties:
+            process_id:
+              type: string
+              description: The unique Process identifier inside the namespace.
+            process_version:
+              type: string
+              pattern: ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+              description: |
+                The Process version, according to the [Semantic Versioning 2.0.0](https://semver.org/) scheme.
+            job_id:
+              type: string
+              description: The unique Job identifier inside the namespace.
+            entries:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/FeatureCollection'
+              description: The dictionary that describes outputs identifiers with related STAC Item value.
+    ChildUsage:
+      type: object
+      description: Report of a child process execution used resources.
+      properties:
+        name:
+          type: string
+          description: The name of the child process.
+          example: node_crop_6
+        start_time:
+          type: string
+          format: date-time
+          description: |
+            The execution start time, in the date-time notation as defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6).
+          example: '2025-03-11T16:20:37Z'
+        finish_time:
+          type: string
+          format: date-time
+          description: |
+            The execution finish time, in the date-time notation as defined by [RFC 3339, section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6).
+          example: '2025-03-11T16:21:25Z'
+        elapsed_hours:
+          type: number
+          description: The execution elapsed hour(s).
+          example: 0.013333333333333334
+        elapsed_seconds:
+          type: number
+          description: The execution elapsed second(s).
+          format: double
+          example: 48
+        exit_code:
+          type: integer
+          format: int32
+          description: The executed child process exit code.
+        cpus:
+          type: number
+          format: double
+          description: The number of Central Processing Unit cores used for the execution.
+          example: 1
+        cpu_hours:
+          type: number
+          format: double
+          description: The number of Central Processing Unit cores used per hour for the execution.
+          example: 0.013333333333333334
+        ram_megabytes:
+          type: number
+          format: double
+          description: The size of the RAM used for the execution, in MegaBytes.
+          example: 536.870912
+        ram_megabyte_hours:
+          type: number
+          format: double
+          description: The size of the RAM used per hour for the execution, in MegaBytes.
+          example: 7.158278826666667
+        disk_megabytes:
+          type: number
+          format: double
+          description: The size of the Disk used for the execution, in MegaBytes.
+          example: 99.962848
+    OrderedData:
+      title: OrderedData
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BaseData'
+        - type: object
+          required:
+            - profile
+            - order_id
+            - entries
+          properties:
+            profile:
+              type: string
+              description: The unique profile identifier inside the namespace.
+            order_id:
+              type: string
+              description: The unique Order identifier inside the namespace.
+            entries:
+              type: object
+              description: The dictionary that describes outputs identifiers with related STAC Item value.
+              additionalProperties:
+                $ref: '#/components/schemas/FeatureCollection'
+    ProblemDetails:
+      type: object
+      description: |-
+        The `ProblemDetails` object provides detailed information about an errors that occurred during an API call execution. This problem object conforms to the [RFC9457](https://www.rfc-editor.org/info/rfc9457) (formerly [RFC7807](https://tools.ietf.org/html/rfc7807)).
+        The object is extended with the following properties: - `code` - a string identifier to aid the provider team better understand the error - `errors` - and array of errors providing contextual information on the root cause of the problem
+        The `ProblemDetails` referenced by this domain utilize the [EOAP Problems Registry](https://eoap.github.io/problems-registry/).
+      properties:
+        instance:
+          type: string
+          description: A URI reference that identifies the specific occurrence of the problem. It may or may not yield further information if dereferenced.
+          maxLength: 1024
+        code:
+          type: string
+          description: An API specific error code aiding the provider team understand the error based on their own potential taxonomy or registry.
+          maxLength: 50
+        errors:
+          type: array
+          description: An array of error details to accompany a problem details response.
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+    BadRequest:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            The server cannot or will not process the request due to something that is perceived to be a client error (for example, malformed request syntax, invalid request message framing, or deceptive request routing).
+            Your client application initiated a request that is malformed. Please review your client request against the defined semantics for the API.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/bad-request
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Bad Request
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request is invalid or malformed.
+    InvalidBodyPropertyFormat:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when the request body contain a malformed property.
+            Your client issued a request that contained a malformed body property. Please review your request and compare against the shared API definition.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/invalid-body-property-format
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Invalid Body Property Format
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request body contains a malformed property.
+    InvalidBodyPropertyValue:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when the request body contains a invalid property value.
+            Your client issued a request that contained an invalid body property value. Please review your request and compare against the shared API definition where applicable.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/invalid-body-property-value
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Invalid Body Property Value
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request body contains an invalid body property value.
+    InvalidParameters:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when a client request contains invalid or malformed parameters causing the server to reject the request.
+            Your client application issued a request to an API that contains invalid or malformed parameters.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/invalid-parameters
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Invalid parameters
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request contained invalid, or malformed parameters (path or header or query).
+    InvalidRequestHeaderFormat:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when the request contains a malformed request header.
+            Your client issued a request that contained a malformed request header. Please review your request parameters and compare against the shared API definition when applicable.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/invalid-request-header-format
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Invalid Request Header Format
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request contains a malformed request header parameter.
+    InvalidRequestParameterFormat:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when the request contains a malformed query or path parameter.
+            Your client issued a request that contained a malformed query or path parameter. Please review your request parameters and compare against the shared API definition.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/invalid-request-parameter-format
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Invalid Request Parameter Format
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request contains a malformed request query parameter.
+    InvalidRequestParameterValue:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when the request contains a invalid query or path parameter value.
+            Your client issued a request that contained an invalid query or path parameter value. Please review your request and compare against the shared API definition where applicable.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/invalid-request-parameter-value
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Invalid Request Parameter Value
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request body contains an invalid request parameter value.
+    MissingBodyProperty:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when the request sent to the API is missing an expected body property.
+            Your client issued a request that omitted an expected body property.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/missing-body-property
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Missing body property
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request is missing an expected body property.
+    MissingRequestHeader:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when the request sent to the API is missing an expected request header.
+            Your client issued a request that omitted an expected request header.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/missing-request-header
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Missing request header
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request is missing an expected HTTP request header.
+    MissingRequestParameter:
+      allOf:
+        - $ref: '#/components/schemas/ProblemDetails'
+        - type: object
+          description: |-
+            This problem occurs when the request sent to the API is missing an query or path parameter.
+            Your client issued a request that omitted an expected query or path par.
+          required:
+            - type
+            - status
+            - title
+            - detail
+          properties:
+            type:
+              type: string
+              description: A URI reference that identifies the problem type.
+              format: uri
+              const: https://eoap.github.io/problems-registry/missing-request-parameter
+            status:
+              type: integer
+              description: The HTTP status code generated by the origin server for this occurrence of the problem.
+              format: int32
+              const: 400
+            title:
+              type: string
+              description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem, except for purposes of localization.
+              const: Missing request parameter
+            detail:
+              type: string
+              description: A human-readable explanation specific to this occurrence of the problem.
+              const: The request is missing an expected query or path parameter.
+  responses:
+    WebhookOk:
+      description: The Webhook successfully enqueued the CloudEvent.
+      content:
+        text/plain:
+          schema:
+            type: string
+          examples:
+            default:
+              value: success
+    BadRequest:
+      description: |
+        The request was malformed or could not be processed. 
+
+        `Bad Request` problem detail responses:
+
+         - [The request is invalid or malformed](https://eoap.github.io/problems-registry/bad-request/)
+         - [Invalid body property format](https://eoap.github.io/problems-registry/invalid-body-property-format/)
+         - [Invalid body property value](https://eoap.github.io/problems-registry/invalid-body-property-value/)
+         - [Invalid Parameters](https://eoap.github.io/problems-registry/invalid-parameters/)
+         - [Invalid request header format](https://eoap.github.io/problems-registry/invalid-request-header-format/)
+         - [Invalid request parameter format](https://eoap.github.io/problems-registry/invalid-request-parameter-format/)
+         - [Invalid request parameter value](https://eoap.github.io/problems-registry/invalid-request-parameter-value/)
+         - [Missing body property](https://eoap.github.io/problems-registry/missing-body-property/)
+         - [Missing request header](https://eoap.github.io/problems-registry/missing-request-header/)
+         - [Missing request parameter](https://eoap.github.io/problems-registry/missing-request-parameter/)
+      content:
+        application/problem+json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/BadRequest'
+              - $ref: '#/components/schemas/InvalidBodyPropertyFormat'
+              - $ref: '#/components/schemas/InvalidBodyPropertyValue'
+              - $ref: '#/components/schemas/InvalidParameters'
+              - $ref: '#/components/schemas/InvalidRequestHeaderFormat'
+              - $ref: '#/components/schemas/InvalidRequestParameterFormat'
+              - $ref: '#/components/schemas/InvalidRequestParameterValue'
+              - $ref: '#/components/schemas/MissingBodyProperty'
+              - $ref: '#/components/schemas/MissingRequestHeader'
+              - $ref: '#/components/schemas/MissingRequestParameter'
+          examples:
+            requestInvalidOrMalformed:
+              $ref: '#/components/examples/request_invalid_malformed'
+            missingBodyProperty:
+              $ref: '#/components/examples/missing-body-property'
+            missingBodyPropertyWithErrors:
+              $ref: '#/components/examples/missing-body-property-with-errors'
+            missingRequestParameter:
+              $ref: '#/components/examples/missing-request-parameter'
+            missingRequestParameterWithErrors:
+              $ref: '#/components/examples/missing-request-parameter-with-errors'
+            missingRequestHeader:
+              $ref: '#/components/examples/missing-request-header'
+            missingRequestHeaderWithErrors:
+              $ref: '#/components/examples/missing-request-header-with-errors'
+            invalidBodyPropertyFormat:
+              $ref: '#/components/examples/invalid-body-property-format'
+            invalidBodyPropertyFormatWithErrors:
+              $ref: '#/components/examples/invalid-body-property-format-with-errors'
+            invalidRequestParameterFormat:
+              $ref: '#/components/examples/invalid-request-parameter-format'
+            invalidRequestParameterFormatWithErrors:
+              $ref: '#/components/examples/invalid-request-parameter-format-with-errors'
+            invalidRequestHeaderFormat:
+              $ref: '#/components/examples/invalid-request-header-format'
+            invalidRequestHeaderFormatWithErrors:
+              $ref: '#/components/examples/invalid-request-header-format-with-errors'
+            invalidBodyPropertyValue:
+              $ref: '#/components/examples/invalid-body-property-value'
+            invalidBodyPropertyValueWithErrors:
+              $ref: '#/components/examples/invalid-body-property-value-with-errors'
+            invalidRequestParameterValue:
+              $ref: '#/components/examples/invalid-request-parameter-value'
+            invalidRequestParameterValueWithErrors:
+              $ref: '#/components/examples/invalid-request-parameter-value-with-errors'
+  examples:
+    Calendar:
+      summary: Calendar
+      value:
+        source: seda:workflows:scan-calendar:5s
+        type: calendar-event
+        subject: workflows:scan-calendar:5s
+        partitionkey: workflows:scan-calendar:5s
+        data:
+          namespace: alice
+          end_time: '2026-02-10T13:32:13Z'
+          event_time: '2026-02-10T13:32:13Z'
+          start_time: '2026-02-10T13:32:08Z'
+    Submitted:
+      summary: Submitted
+      value:
+        source: seda-dev-platform:workflows:pattern-1-v0-2-0:execute
+        type: submitted
+        subject: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        partitionkey: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        data:
+          namespace: alice
+          time: '2026-02-10T13:32:13Z'
+    Dismissed:
+      summary: Dismissed
+      value:
+        source: seda-dev-platform:workflows:pattern-1-v0-2-0:dismiss
+        type: dismissed
+        subject: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        partitionkey: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        data:
+          job_id: pattern-1
+          process_id: pattern-1-v0-2-0
+          namespace: alice
+          time: '2026-02-10T13:32:13Z'
+          status: Succeeded
+    Prepared:
+      summary: Prepared
+      value:
+        source: seda-dev-platform:workflows:pattern-1-v0-2-0:get-results
+        type: prepared
+        subject: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        partitionkey: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        data:
+          job_id: pattern-1
+          process_id: pattern-1-v0-2-0
+          namespace: alice
+          inputs:
+            aoi: -118.985,38.432,-118.183,38.938
+            epsg: EPSG:4326
+            bands:
+              - green
+              - nir08
+            item: https://raw.githubusercontent.com/stac-utils/stac-examples/refs/heads/main/sentinel2/sentinel2-sample.json
+    Completed:
+      summary: Completed
+      value:
+        source: seda-dev-platform:workflows:pattern-1-v0-2-0:get-results
+        type: completed
+        subject: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        partitionkey: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        data:
+          job_id: pattern-1
+          process_id: pattern-1-v0-2-0
+          namespace: alice
+          usage:
+            cores_allowed: 8
+            ram_mb_allowed: 4000
+            children:
+              - cpus: 1
+                ram_megabytes: 536.870912
+                disk_megabytes: 99.962848
+                exit_code: 0
+                name: node_crop_6
+                start_time: '2025-03-11T16:20:37+00:00'
+                finish_time: '2025-03-11T16:21:25+00:00'
+                elapsed_hours: 0.013333333333333334
+                elapsed_seconds: 48
+                ram_megabyte_hours: 7.158278826666667
+                cpu_hours: 0.013333333333333334
+            start_time: '2025-03-11T16:20:36+00:00'
+            finish_time: '2025-03-11T16:23:17+00:00'
+            elapsed_hours: 0.04472222222222222
+            elapsed_seconds: 161
+            total_cpu_hours: 0.21305555555555555
+            total_ram_megabyte_hours: 114.3833304177778
+            total_disk_megabytes: 2490.712061999999
+            total_tasks: 25
+            max_parallel_cpus: 7
+            max_parallel_ram_megabytes: 3758.0963839999995
+            max_parallel_tasks: 0
+          outputs:
+            water_bodies: https://raw.githubusercontent.com/stac-utils/stac-examples/refs/heads/main/sentinel2/sentinel2-sample.json
+    Failed:
+      summary: Failed
+      value:
+        source: seda-dev-platform:workflows:pattern-1-v0-2-0:get-results
+        type: failed
+        subject: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        partitionkey: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        data:
+          job_id: pattern-1
+          process_id: pattern-1-v0-2-0
+          namespace: alice
+          usage:
+            cores_allowed: 8
+            ram_mb_allowed: 4000
+            children:
+              - cpus: 1
+                ram_megabytes: 536.870912
+                disk_megabytes: 99.962848
+                exit_code: 0
+                name: node_crop_6
+                start_time: '2025-03-11T16:20:37+00:00'
+                finish_time: '2025-03-11T16:21:25+00:00'
+                elapsed_hours: 0.013333333333333334
+                elapsed_seconds: 48
+                ram_megabyte_hours: 7.158278826666667
+                cpu_hours: 0.013333333333333334
+            start_time: '2025-03-11T16:20:36+00:00'
+            finish_time: '2025-03-11T16:23:17+00:00'
+            elapsed_hours: 0.04472222222222222
+            elapsed_seconds: 161
+            total_cpu_hours: 0.21305555555555555
+            total_ram_megabyte_hours: 114.3833304177778
+            total_disk_megabytes: 2490.712061999999
+            total_tasks: 25
+            max_parallel_cpus: 7
+            max_parallel_ram_megabytes: 3758.0963839999995
+            max_parallel_tasks: 0
+    Staged:
+      summary: Staged
+      value:
+        source: seda-dev-platform:workflows:pattern-1-v0-2-0:get-results
+        type: staged
+        subject: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        partitionkey: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        data:
+          job_id: pattern-1
+          process_id: pattern-1-v0-2-0
+          namespace: alice
+          outputs:
+            water_bodies:
+              type: FeatureCollection
+              features:
+                - stac_version: 1.0.0-beta.2
+                  stac_extensions:
+                    - view
+                    - projection
+                  type: Feature
+                  id: S2A_OPER_MSI_L2A_TL_SGS__20180524T190423_A015250_T26SKD_N02.08
+                  collection: sentinel-s2-l2a
+                  links:
+                    - rel: self
+                      href: s3://sentinel-s2-l2a-catalog/tiles/35/V/MK/2018/6/5/0/sentinel2-sample.json
+                    - rel: root
+                      href: s3://sentinel-s2-l2a-catalog/catalog.json
+                    - rel: collection
+                      href: s3://sentinel-s2-l2a-catalog/catalog.json
+                  bbox:
+                    - 25.0815883093
+                    - 62.1306897126
+                    - 27.1935425597
+                    - 63.129387237
+                  geometry:
+                    type: Polygon
+                    coordinates:
+                      - - - -105.160846396
+                          - 39.1656009422
+                        - - -104.947574355
+                          - 39.1750024943
+                        - - -104.949890373
+                          - 39.0512153242
+                        - - -105.161151214
+                          - 39.0436821016
+                        - - -105.160846396
+                          - 39.1656009422
+                  properties:
+                    datetime: '2018-06-05T10:00:27Z'
+                    platform: sentinel-2
+                    gsd: 10
+                    proj:epsg: 32635
+                    eo:cloud_cover: 88.459539
+                    view:sun_azimuth: 176.091667178268
+                  assets:
+                    metadata:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/metadata.xml
+                      title: Tile metadata
+                      type: application/xml
+                      roles:
+                        - metadata
+                    tileInfo:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/tileInfo.json
+                      title: Tile info
+                      type: application/json
+                    productInfo:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/productInfo.json
+                      title: Product info
+                      type: application/json
+                    thumbnail:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/L2A_PVI.jp2
+                      title: True color thumbnail
+                      type: image/jp2
+                      roles:
+                        - thumbnail
+                    B02_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B02.jp2
+                      title: Band 2 - Blue 0.490 (10m)
+                      type: image/jp2
+                    B03_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B03.jp2
+                      title: Band 3 - Green 0.560 (10m)
+                      type: image/jp2
+                    B04_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B04.jp2
+                      title: Band 4 - Red 0.665 (10m)
+                      type: image/jp2
+                    B08_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B08.jp2
+                      title: Band 8 - NIR 0.842 (10m)
+                      type: image/jp2
+                    AOT_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/AOT.jp2
+                      title: Aerosol Optical Thickness (10m)
+                      type: image/jp2
+                    TCI_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/TCI.jp2
+                      title: True Color Image (10m)
+                      type: image/jp2
+                    WVP_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/WVP.jp2
+                      title: Water Vapor (10m)
+                      type: image/jp2
+                    B02_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B02.jp2
+                      title: Band 2 - Blue 0.490 (20m)
+                      type: image/jp2
+                    B03_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B03.jp2
+                      title: Band 3 - Green 0.560 (20m)
+                      type: image/jp2
+                    B04_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B04.jp2
+                      title: Band 4 - Red 0.665 (20m)
+                      type: image/jp2
+                    B05_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B05.jp2
+                      title: Band 5 - Vegetation Red Edge 0.705 (20m)
+                      type: image/jp2
+                    B06_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B06.jp2
+                      title: Band 6 - Vegetation Red Edge 0.740 (20m)
+                      type: image/jp2
+                    B07_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B07.jp2
+                      title: Band 7 - Vegetation Red Edge 0.783 (20m)
+                      type: image/jp2
+                    B8A_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B8A.jp2
+                      title: Band 8A - Narrow NIR 0.865 (20m)
+                      type: image/jp2
+                    B11_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B11.jp2
+                      title: Band 11 - SWIR 1.610 (20m)
+                      type: image/jp2
+                    B12_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B12.jp2
+                      title: Band 12 - SWIR 2.190 (20m)
+                      type: image/jp2
+                    AOT_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/AOT.jp2
+                      title: Aerosol Optical Thickness (20m)
+                      type: image/jp2
+                    SCL_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/SCL.jp2
+                      title: Scene Classification (20m)
+                      type: image/jp2
+                    TCI_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/TCI.jp2
+                      title: True Color Image (20m)
+                      type: image/jp2
+                    WVP_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/WVP.jp2
+                      title: Water Vapor (20m)
+                      type: image/jp2
+                    CLD_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/CLD_20m.jp2
+                      title: Cloud (20m)
+                      type: image/jp2
+                    SNW_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/SNW_20m.jp2
+                      title: Snow (20m)
+                      type: image/jp2
+    Piped:
+      summary: Piped
+      value:
+        source: seda-dev-platform:workflows:pattern-1-v0-2-0:get-results
+        type: piped
+        subject: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        partitionkey: workflows:10d6fec5-b064-4373-bb60-5060ce39d682:pattern-1-v0-2-0-62cpk
+        data:
+          job_id: pattern-1
+          process_id: pattern-1-v0-2-0
+          namespace: alice
+          entries:
+            water_bodies:
+              type: FeatureCollection
+              features:
+                - stac_version: 1.0.0-beta.2
+                  stac_extensions:
+                    - view
+                    - projection
+                  type: Feature
+                  id: S2A_OPER_MSI_L2A_TL_SGS__20180524T190423_A015250_T26SKD_N02.08
+                  collection: sentinel-s2-l2a
+                  links:
+                    - rel: self
+                      href: s3://sentinel-s2-l2a-catalog/tiles/35/V/MK/2018/6/5/0/sentinel2-sample.json
+                    - rel: root
+                      href: s3://sentinel-s2-l2a-catalog/catalog.json
+                    - rel: collection
+                      href: s3://sentinel-s2-l2a-catalog/catalog.json
+                  bbox:
+                    - 25.0815883093
+                    - 62.1306897126
+                    - 27.1935425597
+                    - 63.129387237
+                  geometry:
+                    type: Polygon
+                    coordinates:
+                      - - - -105.160846396
+                          - 39.1656009422
+                        - - -104.947574355
+                          - 39.1750024943
+                        - - -104.949890373
+                          - 39.0512153242
+                        - - -105.161151214
+                          - 39.0436821016
+                        - - -105.160846396
+                          - 39.1656009422
+                  properties:
+                    datetime: '2018-06-05T10:00:27Z'
+                    platform: sentinel-2
+                    gsd: 10
+                    proj:epsg: 32635
+                    eo:cloud_cover: 88.459539
+                    view:sun_azimuth: 176.091667178268
+                  assets:
+                    metadata:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/metadata.xml
+                      title: Tile metadata
+                      type: application/xml
+                      roles:
+                        - metadata
+                    tileInfo:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/tileInfo.json
+                      title: Tile info
+                      type: application/json
+                    productInfo:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/productInfo.json
+                      title: Product info
+                      type: application/json
+                    thumbnail:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/L2A_PVI.jp2
+                      title: True color thumbnail
+                      type: image/jp2
+                      roles:
+                        - thumbnail
+                    B02_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B02.jp2
+                      title: Band 2 - Blue 0.490 (10m)
+                      type: image/jp2
+                    B03_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B03.jp2
+                      title: Band 3 - Green 0.560 (10m)
+                      type: image/jp2
+                    B04_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B04.jp2
+                      title: Band 4 - Red 0.665 (10m)
+                      type: image/jp2
+                    B08_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B08.jp2
+                      title: Band 8 - NIR 0.842 (10m)
+                      type: image/jp2
+                    AOT_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/AOT.jp2
+                      title: Aerosol Optical Thickness (10m)
+                      type: image/jp2
+                    TCI_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/TCI.jp2
+                      title: True Color Image (10m)
+                      type: image/jp2
+                    WVP_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/WVP.jp2
+                      title: Water Vapor (10m)
+                      type: image/jp2
+                    B02_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B02.jp2
+                      title: Band 2 - Blue 0.490 (20m)
+                      type: image/jp2
+                    B03_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B03.jp2
+                      title: Band 3 - Green 0.560 (20m)
+                      type: image/jp2
+                    B04_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B04.jp2
+                      title: Band 4 - Red 0.665 (20m)
+                      type: image/jp2
+                    B05_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B05.jp2
+                      title: Band 5 - Vegetation Red Edge 0.705 (20m)
+                      type: image/jp2
+                    B06_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B06.jp2
+                      title: Band 6 - Vegetation Red Edge 0.740 (20m)
+                      type: image/jp2
+                    B07_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B07.jp2
+                      title: Band 7 - Vegetation Red Edge 0.783 (20m)
+                      type: image/jp2
+                    B8A_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B8A.jp2
+                      title: Band 8A - Narrow NIR 0.865 (20m)
+                      type: image/jp2
+                    B11_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B11.jp2
+                      title: Band 11 - SWIR 1.610 (20m)
+                      type: image/jp2
+                    B12_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B12.jp2
+                      title: Band 12 - SWIR 2.190 (20m)
+                      type: image/jp2
+                    AOT_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/AOT.jp2
+                      title: Aerosol Optical Thickness (20m)
+                      type: image/jp2
+                    SCL_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/SCL.jp2
+                      title: Scene Classification (20m)
+                      type: image/jp2
+                    TCI_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/TCI.jp2
+                      title: True Color Image (20m)
+                      type: image/jp2
+                    WVP_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/WVP.jp2
+                      title: Water Vapor (20m)
+                      type: image/jp2
+                    CLD_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/CLD_20m.jp2
+                      title: Cloud (20m)
+                      type: image/jp2
+                    SNW_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/SNW_20m.jp2
+                      title: Snow (20m)
+                      type: image/jp2
+    Ordered:
+      summary: Ordered
+      value:
+        source: ordering-api:{namespace}:{profile}:single-item-ordering
+        type: ordered
+        subject: alice:{collection_id}:{feature_id}
+        partitionkey: alice:{collection_id}:{feature_id}
+        data:
+          namespace: alice
+          profile: profile-1
+          order_id: ord-123
+          entries:
+            water_bodies:
+              type: FeatureCollection
+              features:
+                - stac_version: 1.0.0-beta.2
+                  stac_extensions:
+                    - view
+                    - projection
+                  type: Feature
+                  id: S2A_OPER_MSI_L2A_TL_SGS__20180524T190423_A015250_T26SKD_N02.08
+                  collection: sentinel-s2-l2a
+                  links:
+                    - rel: self
+                      href: s3://sentinel-s2-l2a-catalog/tiles/35/V/MK/2018/6/5/0/sentinel2-sample.json
+                    - rel: root
+                      href: s3://sentinel-s2-l2a-catalog/catalog.json
+                    - rel: collection
+                      href: s3://sentinel-s2-l2a-catalog/catalog.json
+                  bbox:
+                    - 25.0815883093
+                    - 62.1306897126
+                    - 27.1935425597
+                    - 63.129387237
+                  geometry:
+                    type: Polygon
+                    coordinates:
+                      - - - -105.160846396
+                          - 39.1656009422
+                        - - -104.947574355
+                          - 39.1750024943
+                        - - -104.949890373
+                          - 39.0512153242
+                        - - -105.161151214
+                          - 39.0436821016
+                        - - -105.160846396
+                          - 39.1656009422
+                  properties:
+                    datetime: '2018-06-05T10:00:27Z'
+                    platform: sentinel-2
+                    gsd: 10
+                    proj:epsg: 32635
+                    eo:cloud_cover: 88.459539
+                    view:sun_azimuth: 176.091667178268
+                  assets:
+                    metadata:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/metadata.xml
+                      title: Tile metadata
+                      type: application/xml
+                      roles:
+                        - metadata
+                    tileInfo:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/tileInfo.json
+                      title: Tile info
+                      type: application/json
+                    productInfo:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/productInfo.json
+                      title: Product info
+                      type: application/json
+                    thumbnail:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/L2A_PVI.jp2
+                      title: True color thumbnail
+                      type: image/jp2
+                      roles:
+                        - thumbnail
+                    B02_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B02.jp2
+                      title: Band 2 - Blue 0.490 (10m)
+                      type: image/jp2
+                    B03_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B03.jp2
+                      title: Band 3 - Green 0.560 (10m)
+                      type: image/jp2
+                    B04_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B04.jp2
+                      title: Band 4 - Red 0.665 (10m)
+                      type: image/jp2
+                    B08_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/B08.jp2
+                      title: Band 8 - NIR 0.842 (10m)
+                      type: image/jp2
+                    AOT_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/AOT.jp2
+                      title: Aerosol Optical Thickness (10m)
+                      type: image/jp2
+                    TCI_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/TCI.jp2
+                      title: True Color Image (10m)
+                      type: image/jp2
+                    WVP_10m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R10m/WVP.jp2
+                      title: Water Vapor (10m)
+                      type: image/jp2
+                    B02_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B02.jp2
+                      title: Band 2 - Blue 0.490 (20m)
+                      type: image/jp2
+                    B03_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B03.jp2
+                      title: Band 3 - Green 0.560 (20m)
+                      type: image/jp2
+                    B04_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B04.jp2
+                      title: Band 4 - Red 0.665 (20m)
+                      type: image/jp2
+                    B05_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B05.jp2
+                      title: Band 5 - Vegetation Red Edge 0.705 (20m)
+                      type: image/jp2
+                    B06_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B06.jp2
+                      title: Band 6 - Vegetation Red Edge 0.740 (20m)
+                      type: image/jp2
+                    B07_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B07.jp2
+                      title: Band 7 - Vegetation Red Edge 0.783 (20m)
+                      type: image/jp2
+                    B8A_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B8A.jp2
+                      title: Band 8A - Narrow NIR 0.865 (20m)
+                      type: image/jp2
+                    B11_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B11.jp2
+                      title: Band 11 - SWIR 1.610 (20m)
+                      type: image/jp2
+                    B12_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/B12.jp2
+                      title: Band 12 - SWIR 2.190 (20m)
+                      type: image/jp2
+                    AOT_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/AOT.jp2
+                      title: Aerosol Optical Thickness (20m)
+                      type: image/jp2
+                    SCL_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/SCL.jp2
+                      title: Scene Classification (20m)
+                      type: image/jp2
+                    TCI_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/TCI.jp2
+                      title: True Color Image (20m)
+                      type: image/jp2
+                    WVP_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/R20m/WVP.jp2
+                      title: Water Vapor (20m)
+                      type: image/jp2
+                    CLD_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/CLD_20m.jp2
+                      title: Cloud (20m)
+                      type: image/jp2
+                    SNW_20m:
+                      href: s3://sentinel-s2-l2a/tiles/35/V/MK/2018/6/5/0/qi/SNW_20m.jp2
+                      title: Snow (20m)
+                      type: image/jp2
+    request_invalid_malformed:
+      description: Representation of a 400 Bad Request response where the server would not process the request due to something the server considered to be a client error.
+      value:
+        type: https://eoap.github.io/problems-registry/bad-request
+        status: 400
+        title: Malformed request syntax
+        detail: Request body could not be read properly.
+        code: 400-01
+    missing-body-property:
+      description: Representation of a 400 Bad Request response where a rquired `body` property was omitted by the consumer.
+      value:
+        type: https://eoap.github.io/problems-registry/missing-body-property
+        status: 400
+        title: Missing body property
+        detail: The request is missing an expected body property.
+        code: 400-09
+    missing-body-property-with-errors:
+      description: Representation of a 400 Bad Request response where a rquired `body` property was omitted by the consumer.
+      value:
+        type: https://eoap.github.io/problems-registry/missing-body-property
+        status: 400
+        title: Missing body property
+        detail: The request is missing an expected body property.
+        code: 400-09
+        errors:
+          - detail: The body property {name} is required.
+            pointer: /name
+    missing-request-parameter:
+      description: Representation of a 400 Bad Request response where a `query` or `path` parameter was omitted by the consumer.
+      value:
+        type: https://eoap.github.io/problems-registry/missing-request-parameter
+        status: 400
+        title: Missing request parameter
+        detail: The request is missing an expected query or path parameter.
+        code: 400-03
+    missing-request-parameter-with-errors:
+      description: Representation of a 400 Bad Request response where a `query` or `path` parameter was omitted by the consumer.
+      value:
+        type: https://eoap.github.io/problems-registry/missing-request-parameter
+        status: 400
+        title: Missing request parameter
+        detail: The request is missing an expected query or path parameter.
+        code: 400-03
+        errors:
+          - detail: The query parameter {name} is required.
+            parameter: name
+    missing-request-header:
+      description: Representation of a 400 Bad Request response where a `header` parameter was omitted by the consumer.
+      value:
+        type: https://eoap.github.io/problems-registry/missing-request-header
+        status: 400
+        title: Missing request header
+        detail: The request is missing an expected HTTP request header.
+        code: 400-02
+    missing-request-header-with-errors:
+      description: Representation of a 400 Bad Request response where a `header` parameter was omitted by the consumer.
+      value:
+        type: https://eoap.github.io/problems-registry/missing-request-header
+        status: 400
+        title: Missing request header
+        detail: The request is missing an expected HTTP request header.
+        code: 400-02
+        errors:
+          - detail: The header {Accept} is required
+            header: Accept
+    invalid-body-property-format:
+      description: Representation of a 400 Bad Request response where a body property does not leverage the correct format
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-body-property-format
+        status: 400
+        title: Invalid Body Property Format
+        detail: The request body contains a malformed property.
+        code: 400-04
+    invalid-body-property-format-with-errors:
+      description: Representation of a 400 Bad Request response where a body property does not leverage the correct format
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-body-property-format
+        status: 400
+        title: Invalid Body Property Format
+        detail: The request body contains a malformed property.
+        code: 400-04
+        errors:
+          - detail: Must be a positive integer
+            pointer: /quantity
+    invalid-request-parameter-format:
+      description: Representation of a 400 Bad Request response where a query or path parameter is malformed.
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-request-parameter-format
+        status: 400
+        title: Invalid Request Parameter Format
+        detail: The request contains a malformed query parameter.
+        code: 400-05
+    invalid-request-parameter-format-with-errors:
+      description: Representation of a 400 Bad Request response where a query or path parameter is malformed.
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-request-parameter-format
+        status: 400
+        title: Invalid Request Parameter Format
+        detail: The request contains a malformed query parameter.
+        code: 400-05
+        errors:
+          - detail: The expected string values are ASC or DSC
+            parameter: sort
+    invalid-request-header-format:
+      description: Representation of a 400 Bad Request response where request header provided was malformed
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-request-header-format
+        status: 400
+        title: Invalid Request Header Format
+        detail: The request contains a malformed request header parameter.
+        code: 400-06
+    invalid-request-header-format-with-errors:
+      description: Representation of a 400 Bad Request response where a query or path parameter is malformed.
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-request-header-format
+        status: 400
+        title: Invalid Request Header Format
+        detail: The request contains a malformed request header parameter.
+        code: 400-06
+        errors:
+          - detail: The request header was malformed
+            header: Accept
+    invalid-body-property-value:
+      description: Representation of a 400 Bad Request response where the request body contains a invalid property value
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-body-property-value
+        status: 400
+        title: Invalid Body Property Value
+        detail: The request body contains an invalid body property value.
+        code: 400-07
+    invalid-body-property-value-with-errors:
+      description: Representation of a 400 Bad Request response where the request body contains a invalid property value
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-body-property-value
+        status: 400
+        title: Invalid Body Property Value
+        detail: The request body contains an invalid body property value.
+        code: 400-07
+        errors:
+          - detail: A value `Never` is an invalid. Please provide `monthly` or `quarterly`
+            pointer: '#/marketingCommunication/frequency'
+    invalid-request-parameter-value:
+      description: Representation of a 400 Bad Request response where the request contains a invalid query or path parameter value.
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-request-parameter-value
+        status: 400
+        title: Invalid Request Parameter Value
+        detail: The request body contains an invalid request parameter value.
+        code: 400-08
+    invalid-request-parameter-value-with-errors:
+      description: Representation of a 400 Bad Request response where the request contains a invalid query or path parameter value.
+      value:
+        type: https://eoap.github.io/problems-registry/invalid-request-parameter-value
+        status: 400
+        title: Invalid Request Parameter Value
+        detail: The request body contains an invalid request parameter value.
+        code: 400-08
+        errors:
+          - detail: The value `top-down` is not a valid sort parameter value. The expected string values are `ASC` or `DSC`
+            parameter: sort

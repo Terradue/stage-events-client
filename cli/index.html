@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Terradue" /><link rel="canonical" href="https://terradue.github.io/schemas/cli/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>CLI - SEDA APIs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../styles/css/app.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "CLI";
+        var mkdocs_page_input_path = "cli.md";
+        var mkdocs_page_url = "/schemas/cli/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../imgs/icon-eoap.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Events MATE</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../python-api/">Python API</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">CLI</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#options">Options</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#providing-event-data">Providing event data</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inline-json">Inline JSON</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#json-file">JSON file</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#standard-input">Standard input</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#token-authentication">Token authentication</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#kafka-topic-header">Kafka topic header</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#tls-verification-and-timeouts">TLS verification and timeouts</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#output-and-exit-status">Output and exit status</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../c4/class/schemas/openapi.html">OpenAPI</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">SEDA APIs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Events MATE</li>
+      <li class="breadcrumb-item active">CLI</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/schemas/edit/master/docs/cli.md">Edit on Terradue/schemas</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="stage-events-command-line-interface">Stage Events command-line interface</h1>
+<p>The optional Stage Events CLI sends structured CloudEvents directly from a
+shell. It provides one command for each supported <code>*CloudEvent</code> model and
+validates the event data before making a request.</p>
+<h2 id="installation">Installation</h2>
+<p>The CLI dependencies are not included in the core installation. Enable them
+with the <code>cli</code> extra:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><span class="go">python -m pip install 'stage-events-client[cli]'</span>
+</span></code></pre></div>
+<p>This installs the <code>send-stage-event</code> executable:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-1-1"><span class="go">send-stage-event --version</span>
+</span><span id="__span-1-2"><span class="go">send-stage-event --help</span>
+</span></code></pre></div>
+<p>If the package was installed without the extra, reinstall it with the command
+above.</p>
+<h2 id="commands">Commands</h2>
+<p>The general command form is:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-2-1"><span class="go">send-stage-event COMMAND URL [OPTIONS]</span>
+</span></code></pre></div>
+<p><code>URL</code> is the complete HTTP or HTTPS endpoint, including its path and optional
+query string. The base URL and endpoint path do not need to be configured
+separately. URL fragments are not accepted.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Event model</th>
+<th>Event type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calendar</code></td>
+<td><code>CalendarCloudEvent</code></td>
+<td><code>calendar-event</code></td>
+</tr>
+<tr>
+<td><code>submitted</code></td>
+<td><code>SubmittedCloudEvent</code></td>
+<td><code>submitted</code></td>
+</tr>
+<tr>
+<td><code>dismissed</code></td>
+<td><code>DismissedCloudEvent</code></td>
+<td><code>dismissed</code></td>
+</tr>
+<tr>
+<td><code>prepared</code></td>
+<td><code>PreparedCloudEvent</code></td>
+<td><code>prepared</code></td>
+</tr>
+<tr>
+<td><code>completed</code></td>
+<td><code>CompletedCloudEvent</code></td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td><code>FailedCloudEvent</code></td>
+<td><code>failed</code></td>
+</tr>
+<tr>
+<td><code>piped</code></td>
+<td><code>PipedCloudEvent</code></td>
+<td><code>piped</code></td>
+</tr>
+<tr>
+<td><code>staged</code></td>
+<td><code>StagedCloudEvent</code></td>
+<td><code>staged</code></td>
+</tr>
+<tr>
+<td><code>ordered</code></td>
+<td><code>OrderedCloudEvent</code></td>
+<td><code>ordered</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use a command's help output to inspect its options:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-3-1"><span class="go">send-stage-event submitted --help</span>
+</span></code></pre></div>
+<h2 id="options">Options</h2>
+<p>All event commands accept the same CloudEvent and request options.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--source TEXT</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>CloudEvent source. It must contain three colon-separated components.</td>
+</tr>
+<tr>
+<td><code>--subject TEXT</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>CloudEvent subject. It must contain three colon-separated components.</td>
+</tr>
+<tr>
+<td><code>--data JSON\|@FILE\|-</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>Event-specific data as an inline JSON object, a file, or standard input.</td>
+</tr>
+<tr>
+<td><code>--partition-key TEXT</code></td>
+<td>No</td>
+<td>Value of <code>--subject</code></td>
+<td>CloudEvent partition key.</td>
+</tr>
+<tr>
+<td><code>--x-kafka-topic TEXT</code></td>
+<td>No</td>
+<td>Header omitted</td>
+<td>Value of the <code>X-Kafka-Topic</code> request header.</td>
+</tr>
+<tr>
+<td><code>--token TEXT</code></td>
+<td>No</td>
+<td><code>STAGE_EVENTS_TOKEN</code></td>
+<td>Bearer token used for authentication.</td>
+</tr>
+<tr>
+<td><code>--timeout FLOAT</code></td>
+<td>No</td>
+<td><code>30.0</code></td>
+<td>Positive request timeout in seconds.</td>
+</tr>
+<tr>
+<td><code>--verify-ssl</code></td>
+<td>No</td>
+<td>Enabled</td>
+<td>Enable TLS certificate verification.</td>
+</tr>
+<tr>
+<td><code>--no-verify-ssl</code></td>
+<td>No</td>
+<td>—</td>
+<td>Disable TLS certificate verification.</td>
+</tr>
+</tbody>
+</table>
+<p>The event <code>type</code> is selected by the command and cannot be overridden. Event
+data is validated against the corresponding Pydantic data model. Invalid JSON
+or model validation errors are reported before any request is sent.</p>
+<h2 id="providing-event-data">Providing event data</h2>
+<h3 id="inline-json">Inline JSON</h3>
+<p>Pass a JSON object directly to <code>--data</code>:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-4-1"><span class="go">send-stage-event submitted \</span>
+</span><span id="__span-4-2"><span class="go">  https://events.example.com/hooks/cloud-events \</span>
+</span><span id="__span-4-3"><span class="go">  --source workflows:example-process:submit \</span>
+</span><span id="__span-4-4"><span class="go">  --subject workflows:2f660c57:example-workflow \</span>
+</span><span id="__span-4-5"><span class="go">  --data '{"namespace":"workflows","time":"2026-07-18T12:00:00Z"}'</span>
+</span></code></pre></div>
+<h3 id="json-file">JSON file</h3>
+<p>Prefix the file path with <code>@</code>:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-5-1"><span class="go">send-stage-event prepared \</span>
+</span><span id="__span-5-2"><span class="go">  https://events.example.com/hooks/cloud-events \</span>
+</span><span id="__span-5-3"><span class="go">  --source workflows:example-process:prepare \</span>
+</span><span id="__span-5-4"><span class="go">  --subject workflows:2f660c57:example-workflow \</span>
+</span><span id="__span-5-5"><span class="go">  --data @prepared-data.json</span>
+</span></code></pre></div>
+<p>For example, <code>prepared-data.json</code> could contain:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-6-1"><span class="p">{</span>
+</span><span id="__span-6-2"><span class="w">  </span><span class="nt">"namespace"</span><span class="p">:</span><span class="w"> </span><span class="s2">"workflows"</span><span class="p">,</span>
+</span><span id="__span-6-3"><span class="w">  </span><span class="nt">"process_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"example-process"</span><span class="p">,</span>
+</span><span id="__span-6-4"><span class="w">  </span><span class="nt">"process_version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.2.0"</span><span class="p">,</span>
+</span><span id="__span-6-5"><span class="w">  </span><span class="nt">"job_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2f660c57"</span><span class="p">,</span>
+</span><span id="__span-6-6"><span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-7"><span class="w">    </span><span class="nt">"area"</span><span class="p">:</span><span class="w"> </span><span class="s2">"s3://example-bucket/area.geojson"</span>
+</span><span id="__span-6-8"><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-6-9"><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="standard-input">Standard input</h3>
+<p>Use <code>-</code> to read the JSON object from standard input:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-7-1"><span class="go">cat submitted-data.json | send-stage-event submitted \</span>
+</span><span id="__span-7-2"><span class="go">  https://events.example.com/hooks/cloud-events \</span>
+</span><span id="__span-7-3"><span class="go">  --source workflows:example-process:submit \</span>
+</span><span id="__span-7-4"><span class="go">  --subject workflows:2f660c57:example-workflow \</span>
+</span><span id="__span-7-5"><span class="go">  --data -</span>
+</span></code></pre></div>
+<p>In every input mode, <code>--data</code> must resolve to a JSON object rather than an array
+or scalar value.</p>
+<h2 id="token-authentication">Token authentication</h2>
+<p>Use <code>--token</code> to authenticate a request with a bearer token. Pass only the token
+value; the CLI adds the <code>Bearer</code> scheme and sends it in the <code>Authorization</code>
+header:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-8-1"><span class="go">send-stage-event submitted \</span>
+</span><span id="__span-8-2"><span class="go">  https://events.example.com/hooks/cloud-events \</span>
+</span><span id="__span-8-3"><span class="go">  --source workflows:example-process:submit \</span>
+</span><span id="__span-8-4"><span class="go">  --subject workflows:2f660c57:example-workflow \</span>
+</span><span id="__span-8-5"><span class="go">  --data @submitted-data.json \</span>
+</span><span id="__span-8-6"><span class="go">  --token your-bearer-token</span>
+</span></code></pre></div>
+<p>The request above includes this header:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-9-1"><span class="err">Authorization: Bearer your-bearer-token</span>
+</span></code></pre></div>
+<p>For scripts and CI jobs, use the <code>STAGE_EVENTS_TOKEN</code> environment variable so
+the token does not appear in shell history or process arguments:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-10-1"><span class="go">export STAGE_EVENTS_TOKEN=your-bearer-token</span>
+</span><span id="__span-10-2">
+</span><span id="__span-10-3"><span class="go">send-stage-event submitted \</span>
+</span><span id="__span-10-4"><span class="go">  https://events.example.com/hooks/cloud-events \</span>
+</span><span id="__span-10-5"><span class="go">  --source workflows:example-process:submit \</span>
+</span><span id="__span-10-6"><span class="go">  --subject workflows:2f660c57:example-workflow \</span>
+</span><span id="__span-10-7"><span class="go">  --data @submitted-data.json</span>
+</span></code></pre></div>
+<p>If both are set, the value passed with <code>--token</code> takes precedence over
+<code>STAGE_EVENTS_TOKEN</code>.</p>
+<p>When neither form is provided, the request is sent without an <code>Authorization</code>
+header.</p>
+<h2 id="kafka-topic-header">Kafka topic header</h2>
+<p>The <code>X-Kafka-Topic</code> header is optional. When needed, pass it with
+<code>--x-kafka-topic</code>:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-11-1"><span class="go">send-stage-event submitted \</span>
+</span><span id="__span-11-2"><span class="go">  https://events.example.com/hooks/cloud-events \</span>
+</span><span id="__span-11-3"><span class="go">  --source workflows:example-process:submit \</span>
+</span><span id="__span-11-4"><span class="go">  --subject workflows:2f660c57:example-workflow \</span>
+</span><span id="__span-11-5"><span class="go">  --data @submitted-data.json \</span>
+</span><span id="__span-11-6"><span class="go">  --x-kafka-topic workflows.2f660c57.submitted</span>
+</span></code></pre></div>
+<p>When the option is absent, the CLI does not add the header. Topic names accepted
+by the Stage Events API follow this pattern:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-12-1">{namespace}.{workflow-uid}.{event-suffix}
+</span></code></pre></div>
+<p>The suffix is one of <code>prepared</code>, <code>submitted</code>, <code>completed</code>, <code>failed</code>, <code>piped</code>,
+<code>staged</code>, <code>dismissed</code>, or <code>ordered</code>. Calendar topics use a duration followed by
+<code>.calendar</code>, for example <code>workflows.2f660c57.10m.calendar</code>.</p>
+<h2 id="tls-verification-and-timeouts">TLS verification and timeouts</h2>
+<p>TLS certificate verification is enabled by default. Only use
+<code>--no-verify-ssl</code> in a controlled development environment:</p>
+<div class="highlight"><pre><span></span><code><span id="__span-13-1"><span class="go">send-stage-event submitted \</span>
+</span><span id="__span-13-2"><span class="go">  https://localhost:12000/cloud-events \</span>
+</span><span id="__span-13-3"><span class="go">  --source workflows:example-process:submit \</span>
+</span><span id="__span-13-4"><span class="go">  --subject workflows:2f660c57:example-workflow \</span>
+</span><span id="__span-13-5"><span class="go">  --data @submitted-data.json \</span>
+</span><span id="__span-13-6"><span class="go">  --timeout 10 \</span>
+</span><span id="__span-13-7"><span class="go">  --no-verify-ssl</span>
+</span></code></pre></div>
+<h2 id="output-and-exit-status">Output and exit status</h2>
+<p>On success, the CLI writes the parsed response body to standard output when it
+is not empty and exits with status <code>0</code>.</p>
+<p>Validation failures, connection errors, unexpected HTTP statuses, and
+documented API errors are written to standard error and produce a non-zero exit
+status. Structured API problem responses are rendered as formatted JSON.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../python-api/" class="btn btn-neutral float-left" title="Python API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../c4/class/schemas/openapi.html" class="btn btn-neutral float-right" title="OpenAPI">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p><a href="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square">Apache License, Version 2.0</a>, by <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a></p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/schemas/" class="fa fa-code-fork" style="color: #fcfcfc"> Terradue/schemas</a>
+        </span>
+    
+    
+      <span><a href="../python-api/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../c4/class/schemas/openapi.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../javascripts/config.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
