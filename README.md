@@ -2,8 +2,8 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/stage-events-client.svg)](https://pypi.org/project/stage-events-client)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/stage-events-client.svg)](https://pypi.org/project/stage-events-client)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/eoap/stage-events-client/package.yaml?branch=develop&event=push&label=build&logo=githubactions)](https://github.com/eoap/stage-events-client/actions/workflows/package.yaml?query=branch%3Adevelop)
-[![Code coverage](https://img.shields.io/codecov/c/github/eoap/stage-events-client/develop?logo=codecov)](https://app.codecov.io/gh/eoap-stage-events-client/tree/develop)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Terradue/stage-events-client/package.yaml?branch=develop&event=push&label=build&logo=githubactions)](https://github.com/Terradue/stage-events-client/actions/workflows/package.yaml?query=branch%3Adevelop)
+[![Code coverage](https://img.shields.io/codecov/c/github/Terradue/stage-events-client/develop?logo=codecov)](https://app.codecov.io/gh/Terradue-stage-events-client/tree/develop)
 
 Python client for sending structured-mode
 [CloudEvents 1.0.2](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md)
