@@ -14,7 +14,7 @@
 
 import unittest
 from http import HTTPStatus
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
 
@@ -37,7 +37,7 @@ class CliTests(unittest.TestCase):
             self.assertIn(command_name, result.output)
 
     @patch("stage_events_client.cli.send_cloud_event.sync_detailed")
-    def test_submitted_accepts_complete_url_and_sends_event(self, send) -> None:
+    def test_submitted_accepts_complete_url_and_sends_event(self, send: MagicMock) -> None:
         send.return_value = Response(
             status_code=HTTPStatus.OK,
             content=b"accepted",
@@ -72,7 +72,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(kwargs["x_kafka_topic"], "namespace.workflow-id.submitted")
 
     @patch("stage_events_client.cli.send_cloud_event.sync_detailed")
-    def test_token_uses_authenticated_client_and_topic_is_optional(self, send) -> None:
+    def test_token_uses_authenticated_client_and_topic_is_optional(self, send: MagicMock) -> None:
         send.return_value = Response(
             status_code=HTTPStatus.OK,
             content=b"",

@@ -1393,7 +1393,7 @@ components:
           process_id: pattern-1-v0-2-0
           namespace: alice
           inputs:
-            aoi: '-118.985,38.432,-118.183,38.938'
+            aoi: -118.985,38.432,-118.183,38.938
             epsg: EPSG:4326
             bands:
               - green
