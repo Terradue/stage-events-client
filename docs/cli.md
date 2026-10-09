@@ -1,39 +1,19 @@
-# Stage Events command-line interface
+# CLI reference
 
-The optional Stage Events CLI sends structured CloudEvents directly from a
-shell. It provides one command for each supported `*CloudEvent` model and
-validates the event data before making a request.
+The optional `stage-events-client[cli]` extra provides `send-stage-event`.
+For complete examples, see [send events from the command line](how-to/send-from-cli.md).
 
-## Installation
+## Invocation
 
-The CLI dependencies are not included in the core installation. Enable them
-with the `cli` extra:
-
-```console
-python -m pip install 'stage-events-client[cli]'
-```
-
-This installs the `send-stage-event` executable:
-
-```console
-send-stage-event --version
-send-stage-event --help
-```
-
-If the package was installed without the extra, reinstall it with the command
-above.
-
-## Commands
-
-The general command form is:
-
-```console
+```text
+send-stage-event [--version] [-h | --help]
 send-stage-event COMMAND URL [OPTIONS]
 ```
 
-`URL` is the complete HTTP or HTTPS endpoint, including its path and optional
-query string. The base URL and endpoint path do not need to be configured
-separately. URL fragments are not accepted.
+`URL` must be an absolute HTTP or HTTPS URL with no fragment. Its path and query
+string are preserved; an empty path becomes `/`. No endpoint path is appended.
+
+## Commands
 
 | Command | Event model | Event type |
 | --- | --- | --- |
@@ -47,172 +27,51 @@ separately. URL fragments are not accepted.
 | `staged` | `StagedCloudEvent` | `staged` |
 | `ordered` | `OrderedCloudEvent` | `ordered` |
 
-Use a command's help output to inspect its options:
-
-```console
-send-stage-event submitted --help
-```
+All commands share the options below. Each validates its data against the
+corresponding [event data model](reference/events.md#event-data).
 
 ## Options
 
-All event commands accept the same CloudEvent and request options.
-
-| Option | Required | Default | Description |
+| Option | Required | Default | Meaning |
 | --- | --- | --- | --- |
-| `--source TEXT` | Yes | — | CloudEvent source. It must contain three colon-separated components. |
-| `--subject TEXT` | Yes | — | CloudEvent subject. It must contain three colon-separated components. |
-| `--data JSON\|@FILE\|-` | Yes | — | Event-specific data as an inline JSON object, a file, or standard input. |
-| `--partition-key TEXT` | No | Value of `--subject` | CloudEvent partition key. |
-| `--x-kafka-topic TEXT` | No | Header omitted | Value of the `X-Kafka-Topic` request header. |
-| `--token TEXT` | No | `STAGE_EVENTS_TOKEN` | Bearer token used for authentication. |
-| `--timeout FLOAT` | No | `30.0` | Positive request timeout in seconds. |
-| `--verify-ssl` | No | Enabled | Enable TLS certificate verification. |
-| `--no-verify-ssl` | No | — | Disable TLS certificate verification. |
+| `--source TEXT` | Yes | — | Three nonempty colon-separated components. |
+| `--subject TEXT` | Yes | — | Three nonempty colon-separated components. |
+| `--data JSON\|@FILE\|-` | Yes | — | Data object as inline JSON, a UTF-8 JSON file, or stdin. |
+| `--partition-key TEXT` | No | Subject | Grouping key; an empty value also falls back to the subject. |
+| `--x-kafka-topic TEXT` | No | Omitted | Per-request topic header; see the contract distinction below. |
+| `--token TEXT` | No | `STAGE_EVENTS_TOKEN` | Token without `Bearer`; explicit option takes precedence. |
+| `--timeout FLOAT` | No | `30.0` | Positive HTTPX timeout in seconds. |
+| `--verify-ssl / --no-verify-ssl` | No | Verification enabled | Whether to verify the server TLS certificate. |
+| `-h / --help` | No | — | Show help and exit. |
 
-The event `type` is selected by the command and cannot be overridden. Event
-data is validated against the corresponding Pydantic data model. Invalid JSON
-or model validation errors are reported before any request is sent.
+`--data` must resolve to an object, not an array or scalar. It contains the
+payload fields, not the CloudEvent envelope. The command determines `type`,
+`specversion` defaults to `1.0`, and `datacontenttype` to `application/json`.
+There are no CLI options for an event ID, arbitrary envelope extensions,
+custom authentication schemes, redirect following, or a CA bundle path.
 
-## Providing event data
+`X-Kafka-Topic` is optional in the CLI but required by the checked-in OpenAPI
+contract. Its pattern is not validated locally. See [routing](reference/events.md#routing).
+TLS verification should remain enabled for production requests.
 
-### Inline JSON
+## Environment variables
 
-Pass a JSON object directly to `--data`:
-
-```console
-send-stage-event submitted \
-  https://events.example.com/hooks/cloud-events \
-  --source workflows:example-process:submit \
-  --subject workflows:2f660c57:example-workflow \
-  --data '{"namespace":"workflows","time":"2026-07-18T12:00:00Z"}'
-```
-
-### JSON file
-
-Prefix the file path with `@`:
-
-```console
-send-stage-event prepared \
-  https://events.example.com/hooks/cloud-events \
-  --source workflows:example-process:prepare \
-  --subject workflows:2f660c57:example-workflow \
-  --data @prepared-data.json
-```
-
-For example, `prepared-data.json` could contain:
-
-```json
-{
-  "namespace": "workflows",
-  "process_id": "example-process",
-  "process_version": "1.2.0",
-  "job_id": "2f660c57",
-  "inputs": {
-    "area": "s3://example-bucket/area.geojson"
-  }
-}
-```
-
-### Standard input
-
-Use `-` to read the JSON object from standard input:
-
-```console
-cat submitted-data.json | send-stage-event submitted \
-  https://events.example.com/hooks/cloud-events \
-  --source workflows:example-process:submit \
-  --subject workflows:2f660c57:example-workflow \
-  --data -
-```
-
-In every input mode, `--data` must resolve to a JSON object rather than an array
-or scalar value.
-
-## Token authentication
-
-Use `--token` to authenticate a request with a bearer token. Pass only the token
-value; the CLI adds the `Bearer` scheme and sends it in the `Authorization`
-header:
-
-```console
-send-stage-event submitted \
-  https://events.example.com/hooks/cloud-events \
-  --source workflows:example-process:submit \
-  --subject workflows:2f660c57:example-workflow \
-  --data @submitted-data.json \
-  --token your-bearer-token
-```
-
-The request above includes this header:
-
-```http
-Authorization: Bearer your-bearer-token
-```
-
-For scripts and CI jobs, use the `STAGE_EVENTS_TOKEN` environment variable so
-the token does not appear in shell history or process arguments:
-
-```console
-export STAGE_EVENTS_TOKEN=your-bearer-token
-
-send-stage-event submitted \
-  https://events.example.com/hooks/cloud-events \
-  --source workflows:example-process:submit \
-  --subject workflows:2f660c57:example-workflow \
-  --data @submitted-data.json
-```
-
-If both are set, the value passed with `--token` takes precedence over
-`STAGE_EVENTS_TOKEN`.
-
-When neither form is provided, the request is sent without an `Authorization`
-header.
-
-## Kafka topic header
-
-The `X-Kafka-Topic` header is optional. When needed, pass it with
-`--x-kafka-topic`:
-
-```console
-send-stage-event submitted \
-  https://events.example.com/hooks/cloud-events \
-  --source workflows:example-process:submit \
-  --subject workflows:2f660c57:example-workflow \
-  --data @submitted-data.json \
-  --x-kafka-topic workflows.2f660c57.submitted
-```
-
-When the option is absent, the CLI does not add the header. Topic names accepted
-by the Stage Events API follow this pattern:
-
-```text
-{namespace}.{workflow-uid}.{event-suffix}
-```
-
-The suffix is one of `prepared`, `submitted`, `completed`, `failed`, `piped`,
-`staged`, `dismissed`, or `ordered`. Calendar topics use a duration followed by
-`.calendar`, for example `workflows.2f660c57.10m.calendar`.
-
-## TLS verification and timeouts
-
-TLS certificate verification is enabled by default. Only use
-`--no-verify-ssl` in a controlled development environment:
-
-```console
-send-stage-event submitted \
-  https://localhost:12000/cloud-events \
-  --source workflows:example-process:submit \
-  --subject workflows:2f660c57:example-workflow \
-  --data @submitted-data.json \
-  --timeout 10 \
-  --no-verify-ssl
-```
+`STAGE_EVENTS_TOKEN` is the CLI's token fallback. A nonempty token causes the
+request to carry `Authorization: Bearer TOKEN`. Without one, the CLI uses the
+unauthenticated client. There is no CLI environment-variable setting for the
+endpoint URL or topic.
 
 ## Output and exit status
 
-On success, the CLI writes the parsed response body to standard output when it
-is not empty and exits with status `0`.
+| Outcome | Output | Exit status |
+| --- | --- | --- |
+| HTTP 200 | Response text on stdout when nonempty | `0` |
+| Usage, URL, JSON, file-input, or option error | Diagnostic on stderr | `2` |
+| Event model validation error | Validation diagnostic on stderr | `1` |
+| HTTPX failure or unexpected HTTP status | Diagnostic on stderr | `1` |
+| Valid documented HTTP 400 problem | Formatted problem JSON on stderr | `1` |
 
-Validation failures, connection errors, unexpected HTTP statuses, and
-documented API errors are written to standard error and produce a non-zero exit
-status. Structured API problem responses are rendered as formatted JSON.
+The CLI enables `raise_on_unexpected_status=True`. Even other 2xx statuses,
+including 201 and 204, fail before the CLI's success branch. Malformed HTTP 400
+bodies can raise unhandled parsing exceptions rather than a formatted diagnostic.
+See [diagnose failed requests](how-to/handle-errors.md).

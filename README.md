@@ -12,6 +12,18 @@ to the Stage Events API.
 The package provides Pydantic models for the supported workflow events and
 synchronous and asynchronous clients built on [HTTPX](https://www.python-httpx.org/).
 
+## Documentation
+
+The project documentation follows [Diátaxis](https://diataxis.fr/):
+
+- [Tutorials](docs/tutorials/index.md): send your first event locally without a service.
+- [How-to guides](docs/how-to/index.md): publish events, configure clients, and contribute changes.
+- [Reference](docs/reference/index.md): CLI options, Python interfaces, and event fields.
+- [Explanation](docs/explanation/index.md): event routing and schema-first architecture.
+
+Browse the [documentation site](https://terradue.github.io/stage-events-client/)
+or start at the [documentation index](docs/index.md).
+
 ## Requirements
 
 - Python 3.10 or newer
@@ -75,7 +87,9 @@ cat submitted-data.json | send-stage-event submitted \
 ```
 
 The partition key defaults to the subject. Override it with `--partition-key`
-when required. The `--x-kafka-topic` option is optional.
+when required. The `--x-kafka-topic` option is optional in the client, but the checked-in
+OpenAPI contract requires the header. Supply it when your service enforces
+that contract.
 
 The bearer token can be supplied through `--token` or the
 `STAGE_EVENTS_TOKEN` environment variable. Run a command with `--help` for TLS,
@@ -83,7 +97,7 @@ timeout, and all other options.
 
 ## Quick start
 
-Create a client, construct an event, and send it with the required Kafka topic:
+Create a client, construct an event, and send it with a Kafka topic:
 
 ```python
 from datetime import datetime, timezone
@@ -132,7 +146,8 @@ client = Client(base_url="https://events.example.com")
 ### Detailed responses
 
 `sync` returns the parsed response body. Use `sync_detailed` when the status,
-headers, or raw response body are also needed:
+headers, or raw response body are also needed. In the client context above,
+replace the `sync` call with:
 
 ```python
 response = send_cloud_event.sync_detailed(
@@ -161,6 +176,10 @@ import asyncio
 
 
 async def main() -> None:
+    client = AuthenticatedClient(
+        base_url="https://events.example.com",
+        token="your-bearer-token",
+    )
     async with client:
         result = await send_cloud_event.asyncio(
             client=client,
@@ -174,7 +193,8 @@ asyncio.run(main())
 ```
 
 Do not use the same client instance in synchronous and asynchronous context
-managers at the same time.
+managers at the same time. Exiting a context closes its HTTPX client; create a
+fresh client for subsequent contexts.
 
 ## Supported events
 
@@ -240,7 +260,8 @@ TLS certificate verification is enabled by default. Setting `verify_ssl=False`
 disables server certificate validation and should only be used in controlled
 development environments.
 
-Clients can be copied with updated settings:
+The `with_*` methods return a new wrapper and also update any HTTPX clients
+already created on the original wrapper:
 
 ```python
 client = client.with_headers({"X-Correlation-ID": "new-request-id"})
@@ -248,10 +269,13 @@ client = client.with_cookies({"session": "value"})
 client = client.with_timeout(httpx.Timeout(10.0))
 ```
 
+The Python client defaults to `timeout=None` (no timeout); set an explicit
+timeout for application requests.
+
 An existing `httpx.Client` or `httpx.AsyncClient` can also be supplied with
 `set_httpx_client` or `set_async_httpx_client`. Doing so overrides the generated
 client configuration, so the HTTPX instance must define its own base URL and
-other required settings.
+other required settings, including authentication headers.
 
 ## Development
 
@@ -264,12 +288,13 @@ hatch run test:test
 Other useful checks are:
 
 ```console
-hatch run test:cov
-hatch run types:check
-hatch run dev:check
-hatch run dev:lint
+hatch run test:test-cov
+hatch run dev:format-check
+hatch run dev:lint-check
+hatch run dev:typecheck
+hatch run dev:security
 ```
 
 ## License
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)

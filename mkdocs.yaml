@@ -12,69 +12,43 @@
   #  See the License for the specific language governing permissions and
   #  limitations under the License.
 
-site_name: SEDA APIs
-site_description: SEDA APIs
+site_name: Stage Events Client
+site_description: Python and CLI documentation for the Stage Events client
 site_author: Terradue
-site_url: https://terradue.github.io/schemas/
-repo_url: https://github.com/Terradue/schemas/
-repo_name: Terradue/schemas
+site_url: https://terradue.github.io/stage-events-client/
+repo_url: https://github.com/Terradue/stage-events-client/
+repo_name: Terradue/stage-events-client
 
 theme:
-  logo: imgs/icon-eoap.png
   name: readthedocs
-
-  palette:
-  - media: "(prefers-color-scheme: light)"
-    scheme: default
-    toggle:
-      icon: material/toggle-switch-off-outline
-      name: Switch to dark mode
-  - media: "(prefers-color-scheme: dark)"
-    scheme: slate
-    toggle:
-      icon: material/toggle-switch
-      name: Switch to light mode
 
 plugins:
 - search
-- mermaid2:
-    version: 11.4.1
 
 markdown_extensions:
-- pymdownx.details
-- abbr
+- tables
+- fenced_code
 - admonition
-- footnotes
-- pymdownx.caret
-- pymdownx.mark
-- pymdownx.tilde
-- pymdownx.arithmatex:
-    generic: true
-- pymdownx.superfences
-- pymdownx.tabbed
-- pymdownx.superfences:
-    custom_fences:
-    - name: mermaid
-      class: mermaid
-      format: !!python/name:pymdownx.superfences.fence_div_format
-- attr_list
-- pymdownx.snippets:
-    base_path: './'
-- pymdownx.highlight:
-    line_spans: __span
-
-extra_css:
-- styles/css/app.css
-  
-extra_javascript:
-- javascripts/config.js
-- https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
 - Home: index.md
-- Events MATE:
-  - Python API: python-api.md
+- Tutorials:
+  - Overview: tutorials/index.md
+  - Send your first event locally: tutorials/first-event.md
+- How-to guides:
+  - Overview: how-to/index.md
+  - Send events from the command line: how-to/send-from-cli.md
+  - Use the Python client: how-to/use-python.md
+  - Diagnose failed requests: how-to/handle-errors.md
+  - Develop and regenerate the client: how-to/development.md
+- Reference:
+  - Overview: reference/index.md
   - CLI: cli.md
+  - Python API: python-api.md
+  - Event models: reference/events.md
   - OpenAPI: c4/class/schemas/openapi.html
+- Explanation:
+  - Overview: explanation/index.md
+  - Events and client architecture: explanation/architecture.md
 
-copyright: <a href="https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square">Apache License, Version 2.0</a>, by <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>
+copyright: Copyright Terradue. Licensed under the Apache License, Version 2.0.

@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [1.2.0] - 2026-10-09
+
+### Fixed
+
+- Added missing `specversion` and `datacontenttype` [CloudEvents](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/spec.md) fields
+
 ## [1.1.0] - 2026-10-02
 
 ### Changed
@@ -74,7 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial version
 
-[Unreleased]: https://github.com/Terradue/stage-events-client/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Terradue/stage-events-client/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Terradue/stage-events-client/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Terradue/stage-events-client/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/Terradue/stage-events-client/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/Terradue/stage-events-client/compare/v1.0.3...v1.0.4
