@@ -300,10 +300,20 @@ components:
       title: CloudEvent
       type: object
       required:
+        - specversion
+        - datacontenttype
         - source
         - subject
         - partitionkey
       properties:
+        specversion:
+          type: string
+          description: The version of the CloudEvents specification which the event uses.
+          const: "1.0"
+        datacontenttype:
+          type: string
+          description: Content type of the data value. Must adhere to RFC 2046 format.
+          const: "application/json"
         source:
           type: string
           pattern: ^[^:]+:[^:]+:[^:]+$

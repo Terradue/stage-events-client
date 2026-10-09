@@ -43,6 +43,8 @@ tasks:
         INPUT_FILE_TYPE: 'openapi'
         SCHEMA: './docs/c4/class/schemas/openapi.yaml'
         OUTPUT: './src/stage_events_client/models.py'
+    - hatch run dev:ruff check --fix --unsafe-fixes src/stage_events_client/models.py
+    - hatch run dev:fix src/stage_events_client/models.py
 
   generate_client_archetype:
     deps:
