@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Terradue" /><link rel="canonical" href="https://terradue.github.io/stage-events-client/reference/events/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Event models - Stage Events Client</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Event models";
+        var mkdocs_page_input_path = "reference/events.md";
+        var mkdocs_page_url = "/stage-events-client/reference/events/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Stage Events Client
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-event/">Send your first event locally</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/send-from-cli/">Send events from the command line</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/use-python/">Use the Python client</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/handle-errors/">Diagnose failed requests</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/development/">Develop and regenerate the client</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../python-api/">Python API</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Event models</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#common-envelope">Common envelope</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#event-data">Event data</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#timestamps-and-statuses">Timestamps and statuses</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#process-inputs-and-outputs">Process inputs and outputs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage-and-failure-details">Usage and failure details</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#geojson-payloads">GeoJSON payloads</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#serialization">Serialization</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#routing">Routing</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../c4/class/schemas/openapi.html">OpenAPI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Events and client architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Stage Events Client</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+      <li class="breadcrumb-item active">Event models</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/stage-events-client/edit/master/docs/reference/events.md">Edit on Terradue/stage-events-client</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="event-model-reference">Event model reference</h1>
+<p>Import event and data models from <code>stage_events_client.models</code>. These Pydantic
+v2 classes are generated from the schema bundle. The tables describe their
+current Python validation behavior. The <a href="../../c4/class/schemas/openapi.html">OpenAPI reference</a>
+describes the HTTP contract.</p>
+<h2 id="common-envelope">Common envelope</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Required at construction</th>
+<th>Default and constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>source</code></td>
+<td>Yes</td>
+<td>Three nonempty colon-separated components; pattern <code>^[^:]+:[^:]+:[^:]+$</code>. Convention: namespace, process identifier, step name.</td>
+</tr>
+<tr>
+<td><code>subject</code></td>
+<td>Yes</td>
+<td>Same pattern as <code>source</code>. Convention: namespace, workflow UID, workflow name.</td>
+</tr>
+<tr>
+<td><code>partitionkey</code></td>
+<td>Yes</td>
+<td>String, normally equal to <code>subject</code>. Only the CLI fills this automatically.</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>Yes</td>
+<td>Data model corresponding to the event class.</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>No</td>
+<td>Literal supplied by the event class; see below.</td>
+</tr>
+<tr>
+<td><code>specversion</code></td>
+<td>No</td>
+<td>Literal <code>"1.0"</code>.</td>
+</tr>
+<tr>
+<td><code>datacontenttype</code></td>
+<td>No</td>
+<td>Literal <code>"application/json"</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The generated envelope allows additional fields. It does not declare, require,
+or generate <code>id</code>; callers can supply it as an extra attribute. The CLI has no
+option for setting an event ID or other extra envelope attributes.</p>
+<h2 id="event-data">Event data</h2>
+<p>Every data model requires <code>namespace: str</code>. All also accept optional nullable
+<code>owner_id: str</code>, <code>properties: dict</code>, and <code>priority: str</code>, each defaulting to
+<code>None</code>. Additional fields are allowed.</p>
+<table>
+<thead>
+<tr>
+<th>CLI command</th>
+<th>CloudEvent class</th>
+<th><code>type</code></th>
+<th>Data class</th>
+<th>Additional required data fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calendar</code></td>
+<td><code>CalendarCloudEvent</code></td>
+<td><code>calendar-event</code></td>
+<td><code>CalendarData</code></td>
+<td><code>event_time</code>, <code>start_time</code>, <code>end_time</code></td>
+</tr>
+<tr>
+<td><code>submitted</code></td>
+<td><code>SubmittedCloudEvent</code></td>
+<td><code>submitted</code></td>
+<td><code>SubmittedData</code></td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>dismissed</code></td>
+<td><code>DismissedCloudEvent</code></td>
+<td><code>dismissed</code></td>
+<td><code>DismissedData</code></td>
+<td><code>status</code></td>
+</tr>
+<tr>
+<td><code>prepared</code></td>
+<td><code>PreparedCloudEvent</code></td>
+<td><code>prepared</code></td>
+<td><code>PreparedData</code></td>
+<td><code>process_id</code>, <code>job_id</code>, <code>inputs</code></td>
+</tr>
+<tr>
+<td><code>completed</code></td>
+<td><code>CompletedCloudEvent</code></td>
+<td><code>completed</code></td>
+<td><code>CompletedData</code></td>
+<td><code>process_id</code>, <code>job_id</code>, <code>usage</code>, <code>outputs</code></td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td><code>FailedCloudEvent</code></td>
+<td><code>failed</code></td>
+<td><code>FailedData</code></td>
+<td><code>process_id</code>, <code>job_id</code>, <code>usage</code></td>
+</tr>
+<tr>
+<td><code>piped</code></td>
+<td><code>PipedCloudEvent</code></td>
+<td><code>piped</code></td>
+<td><code>PipedData</code></td>
+<td><code>process_id</code>, <code>job_id</code>, <code>entries</code></td>
+</tr>
+<tr>
+<td><code>staged</code></td>
+<td><code>StagedCloudEvent</code></td>
+<td><code>staged</code></td>
+<td><code>StagedData</code></td>
+<td><code>process_id</code>, <code>job_id</code>, <code>outputs</code></td>
+</tr>
+<tr>
+<td><code>ordered</code></td>
+<td><code>OrderedCloudEvent</code></td>
+<td><code>ordered</code></td>
+<td><code>OrderedData</code></td>
+<td><code>profile</code>, <code>order_id</code>, <code>entries</code></td>
+</tr>
+</tbody>
+</table>
+<p>The required process, job, profile, and order identifiers are strings.</p>
+<h3 id="timestamps-and-statuses">Timestamps and statuses</h3>
+<p>Calendar timestamps are timezone-aware datetimes. <code>SubmittedData.time</code> and
+<code>DismissedData.time</code> are optional timezone-aware datetimes, defaulting to <code>None</code>.
+JSON values can use ISO timestamps with <code>Z</code> or an explicit offset. Naive
+timestamps are rejected. The generated models do not enforce chronological
+ordering between calendar timestamps.</p>
+<p><code>DismissedStatus</code> values are case-sensitive: <code>Unknown</code>, <code>Pending</code>, <code>Running</code>,
+<code>Succeeded</code>, <code>Failed</code>, and <code>Error</code>. Python enum members are uppercase, for
+example <code>DismissedStatus.RUNNING</code>.</p>
+<h3 id="process-inputs-and-outputs">Process inputs and outputs</h3>
+<p>Prepared, completed, failed, piped, and staged data accept optional nullable
+<code>process_version</code>, defaulting to <code>None</code>. A supplied string must match the
+schema's semantic-version pattern, for example <code>1.2.0</code> or <code>1.2.0-rc.1+build.4</code>.</p>
+<p><code>PreparedData.inputs</code> and <code>CompletedData.outputs</code> are dictionaries with arbitrary
+values. <code>StagedData.outputs</code>, <code>PipedData.entries</code>, and <code>OrderedData.entries</code>
+map names to generated <code>FeatureCollection</code> models.</p>
+<h3 id="usage-and-failure-details">Usage and failure details</h3>
+<p><code>CompletedData.usage</code> and <code>FailedData.usage</code> require a <code>Usage</code> object, but its
+fields are optional, so <code>{}</code> is accepted. It can hold start and finish times,
+elapsed time, CPU, memory, disk, and task counts, plus per-child usage records.
+Field names include their units, such as <code>elapsed_seconds</code>, <code>total_cpu_hours</code>,
+and <code>total_ram_megabyte_hours</code>. Consult the generated OpenAPI for the complete
+<code>Usage</code> and <code>ChildUsage</code> definitions.</p>
+<p><code>FailedData.exception</code> is optional and nullable. Its generated model is named
+<code>Exception</code>; alias it on import, for example <code>Exception as EventException</code>,
+to avoid shadowing Python's built-in exception class. It requires a URL-valued
+<code>type</code> and accepts optional problem information including <code>status</code>, <code>title</code>,
+<code>detail</code>, <code>instance</code>, <code>code</code>, and <code>errors</code>.</p>
+<h3 id="geojson-payloads">GeoJSON payloads</h3>
+<p>The generated module includes <code>FeatureCollection</code>, <code>Feature</code>, <code>Point</code>,
+<code>LineString</code>, <code>Polygon</code>, <code>MultiPoint</code>, <code>MultiLineString</code>, <code>MultiPolygon</code>, and
+<code>GeometryCollection</code>. Coordinate lengths and geometry literals have generated
+constraints. A <code>Feature</code> requires <code>properties</code> and <code>geometry</code> keys, although
+both may be null.</p>
+<p><code>FeatureCollection.features</code> also accepts dictionaries, so acceptance of a
+collection does not guarantee that every feature has passed strict geometry
+validation. These models do not provide complete STAC or geospatial topology
+validation.</p>
+<h2 id="serialization">Serialization</h2>
+<p>The endpoint sends <code>event.model_dump(mode="json")</code>. Datetimes and enums become
+JSON-compatible values. Default values, <code>None</code> values, and allowed extra fields
+are included; the sender does not use <code>exclude_none</code> or <code>exclude_unset</code>.</p>
+<h2 id="routing">Routing</h2>
+<p>The schema's <code>X-Kafka-Topic</code> pattern is:</p>
+<pre><code class="language-text">^[^.]+\.[^.]+\.(\d+[hmsd]\.calendar|prepared|submitted|completed|failed|piped|staged|dismissed|ordered)$
+</code></pre>
+<p>Examples are <code>workflows.demo-001.submitted</code> and
+<code>workflows.demo-001.10m.calendar</code>. The first two components cannot contain dots.
+The calendar duration uses digits followed by <code>h</code>, <code>m</code>, <code>s</code>, or <code>d</code>.</p>
+<p>The OpenAPI parameter is required. In contrast, <code>x_kafka_topic=None</code> and omission
+of CLI <code>--x-kafka-topic</code> omit the per-request header. The client does not validate
+the topic pattern or infer a topic from the event. A shared HTTPX header can
+still supply a value. Services enforcing the schema can reject missing or
+invalid topic headers.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../python-api/" class="btn btn-neutral float-left" title="Python API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../c4/class/schemas/openapi.html" class="btn btn-neutral float-right" title="OpenAPI">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright Terradue. Licensed under the Apache License, Version 2.0.</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/stage-events-client/" class="fa fa-code-fork" style="color: #fcfcfc"> Terradue/stage-events-client</a>
+        </span>
+    
+    
+      <span><a href="../../python-api/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../c4/class/schemas/openapi.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

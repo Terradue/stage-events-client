@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Terradue" /><link rel="canonical" href="https://terradue.github.io/stage-events-client/how-to/handle-errors/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Diagnose failed requests - Stage Events Client</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Diagnose failed requests";
+        var mkdocs_page_input_path = "how-to/handle-errors.md";
+        var mkdocs_page_url = "/stage-events-client/how-to/handle-errors/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Stage Events Client
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-event/">Send your first event locally</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../send-from-cli/">Send events from the command line</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../use-python/">Use the Python client</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Diagnose failed requests</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#fix-local-validation-errors">Fix local validation errors</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#handle-python-responses">Handle Python responses</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#diagnose-service-errors">Diagnose service errors</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../development/">Develop and regenerate the client</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../python-api/">Python API</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/events/">Event models</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../c4/class/schemas/openapi.html">OpenAPI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Events and client architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Stage Events Client</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">How-to guides</li>
+      <li class="breadcrumb-item active">Diagnose failed requests</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/stage-events-client/edit/master/docs/how-to/handle-errors.md">Edit on Terradue/stage-events-client</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="diagnose-failed-requests">Diagnose failed requests</h1>
+<p>Distinguish invalid event data, transport failures, and server responses before
+deciding whether to resend an event.</p>
+<h2 id="fix-local-validation-errors">Fix local validation errors</h2>
+<p>Pydantic validates event construction before transmission. Check the field path
+in the error and compare it with the <a href="../../reference/events/">event reference</a>.
+Common causes include a source or subject without three colon-separated parts,
+a timestamp without a timezone, or a process version such as <code>1.2</code> rather than
+<code>1.2.0</code>.</p>
+<p>For the CLI, check that <code>--data</code> contains a JSON object with the data fields,
+that an <code>@</code> file is readable, and that the URL is absolute HTTP or HTTPS without
+a fragment. Invalid JSON or CLI usage generally exits with status <code>2</code>; event
+model validation exits with status <code>1</code>.</p>
+<h2 id="handle-python-responses">Handle Python responses</h2>
+<p>Use a detailed function and enable <code>raise_on_unexpected_status</code>. In an existing
+client context with your constructed <code>event</code>, use:</p>
+<pre><code class="language-python">from http import HTTPStatus
+
+import httpx
+
+from stage_events_client.api.default import send_cloud_event
+from stage_events_client.errors import UnexpectedStatus
+
+try:
+    response = send_cloud_event.sync_detailed(
+        client=client,
+        body=event,
+        x_kafka_topic=&quot;workflows.demo-001.submitted&quot;,
+    )
+except httpx.TimeoutException:
+    print(&quot;The request timed out; check whether the service received the event.&quot;)
+except httpx.RequestError as exc:
+    print(f&quot;Transport failure: {exc}&quot;)
+except UnexpectedStatus as exc:
+    print(f&quot;Undocumented HTTP status: {exc.status_code}&quot;)
+else:
+    if response.status_code == HTTPStatus.OK:
+        print(response.parsed)
+    elif response.status_code == HTTPStatus.BAD_REQUEST:
+        print(response.parsed)
+</code></pre>
+<p>HTTP 400 responses are returned as problem objects, not raised as
+<code>UnexpectedStatus</code>. For type-specific handling, import problem classes from
+<code>eoap_problems_registry</code>, for example <code>MissingRequestHeader</code>; those are the
+classes the endpoint parser returns.</p>
+<p>Malformed 400 bodies are separate parsing failures: invalid JSON raises
+<code>ValueError</code> (including JSON decoding errors), a non-object raises <code>TypeError</code>,
+and an object that fails problem validation raises Pydantic <code>ValidationError</code>.
+These exceptions propagate even when <code>raise_on_unexpected_status=False</code>.
+The CLI does not turn these parsing failures into its usual formatted API error.</p>
+<h2 id="diagnose-service-errors">Diagnose service errors</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Missing <code>X-Kafka-Topic</code> problem</td>
+<td>Supply the header; the OpenAPI contract requires it even though the client permits omission.</td>
+</tr>
+<tr>
+<td>Invalid topic header</td>
+<td>Use the documented routing pattern; the client forwards topic strings without validating the pattern.</td>
+</tr>
+<tr>
+<td>HTTP 401 or 403</td>
+<td>Check the token and endpoint access with the service operator.</td>
+</tr>
+<tr>
+<td>HTTP 404 or redirect</td>
+<td>Check the complete endpoint path; redirects are not followed by default.</td>
+</tr>
+<tr>
+<td>HTTP 201 or 204 treated as unexpected</td>
+<td>The client documents only 200 as success; check the service contract.</td>
+</tr>
+<tr>
+<td>TLS verification failure</td>
+<td>Configure the trusted CA rather than disabling verification for production.</td>
+</tr>
+<tr>
+<td>Timeout or connection failure</td>
+<td>Check reachability and timeout settings; determine whether the event was accepted before resending.</td>
+</tr>
+</tbody>
+</table>
+<p>The package has no automatic retry, deduplication, or delivery confirmation
+beyond the HTTP response. A timeout does not establish that the server rejected
+the event. Coordinate retry behavior with your service's delivery guarantees.</p>
+<p>See <a href="../../python-api/#responses-and-exceptions">response reference</a> for the
+complete status and exception behavior.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../use-python/" class="btn btn-neutral float-left" title="Use the Python client"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../development/" class="btn btn-neutral float-right" title="Develop and regenerate the client">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright Terradue. Licensed under the Apache License, Version 2.0.</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/stage-events-client/" class="fa fa-code-fork" style="color: #fcfcfc"> Terradue/stage-events-client</a>
+        </span>
+    
+    
+      <span><a href="../use-python/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../development/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

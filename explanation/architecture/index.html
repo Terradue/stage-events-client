@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Terradue" /><link rel="canonical" href="https://terradue.github.io/stage-events-client/explanation/architecture/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Events and client architecture - Stage Events Client</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Events and client architecture";
+        var mkdocs_page_input_path = "explanation/architecture.md";
+        var mkdocs_page_url = "/stage-events-client/explanation/architecture/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Stage Events Client
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-event/">Send your first event locally</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/send-from-cli/">Send events from the command line</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/use-python/">Use the Python client</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/handle-errors/">Diagnose failed requests</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../how-to/development/">Develop and regenerate the client</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../python-api/">Python API</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/events/">Event models</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../c4/class/schemas/openapi.html">OpenAPI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Events and client architecture</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#envelope-and-payload">Envelope and payload</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#grouping-and-routing">Grouping and routing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#request-and-response-layers">Request and response layers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#schema-as-the-source-of-truth">Schema as the source of truth</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Stage Events Client</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Explanation</li>
+      <li class="breadcrumb-item active">Events and client architecture</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/stage-events-client/edit/master/docs/explanation/architecture.md">Edit on Terradue/stage-events-client</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="events-routing-and-client-architecture">Events, routing, and client architecture</h1>
+<p>Stage Events Client is a publisher-side library. A workflow step describes an
+occurrence with an event model, and the client posts that event to a Stage
+Events endpoint. Routing and downstream processing happen outside this package.
+The library neither connects directly to Kafka nor consumes events.</p>
+<h2 id="envelope-and-payload">Envelope and payload</h2>
+<p>A structured event carries its context and payload in the same JSON document.
+<code>source</code> identifies the producing context, <code>subject</code> identifies the workflow,
+and <code>type</code> distinguishes the occurrence. The <code>data</code> object contains fields
+specific to that event type.</p>
+<p>Separating the envelope from the data lets consumers identify related events
+without needing to interpret every payload. For example, a <code>prepared</code> event
+contains process inputs, while <code>staged</code> contains named feature collections.
+Both can refer to the same workflow subject.</p>
+<p>These names describe workflow occurrences, but the client does not implement a
+state machine. It does not enforce event ordering or require that a submitted
+event precede a completed event. Calendar and ordering events also have their
+own payloads; the nine event types are not a mandatory linear sequence.</p>
+<h2 id="grouping-and-routing">Grouping and routing</h2>
+<p>The partition key groups related events and normally matches the subject.
+The optional client argument <code>x_kafka_topic</code> is a separate HTTP header that
+communicates a destination topic to the receiving service. The client does not
+derive one from the other or check their consistency.</p>
+<p>This separation matters when integrating a deployment: the client can construct
+and send an event without a topic, while the checked-in OpenAPI declares that
+header required. Local acceptance of a request is not a guarantee that the
+service will accept it. See the <a href="../../reference/events/#routing">routing reference</a>.</p>
+<h2 id="request-and-response-layers">Request and response layers</h2>
+<pre><code class="language-text">Python application or CLI
+          |
+          v
+Generated Pydantic event model
+          |
+          v
+send_cloud_event + Client / AuthenticatedClient
+          |
+          v
+HTTPX -- HTTP POST --&gt; Stage Events service
+          |
+          v
+Text success, validated problem, or unexpected status
+</code></pre>
+<p>The CLI adds file/stdin input, command selection, token lookup, and exit codes.
+It then calls the same synchronous detailed endpoint function as a Python
+application. Async applications use the equivalent HTTPX async transport.</p>
+<p>Model validation catches structural mistakes before transmission. Transport
+errors describe failures in communication. HTTP responses describe what the
+service returned, with 400 bodies validated against problem models from
+<code>eoap_problems_registry</code>. These are different failure boundaries and call for
+different handling.</p>
+<p>The convenience functions return only the parsed value. Detailed functions
+also expose status, headers, and raw bytes, making them useful when application
+behavior depends on the HTTP result. Neither interface adds retries or confirms
+downstream workflow completion.</p>
+<h2 id="schema-as-the-source-of-truth">Schema as the source of truth</h2>
+<p><code>schemas/openapi.yaml</code> defines the API, including references to shared schemas.
+The Taskfile bundles it into <code>docs/c4/class/schemas/openapi.yaml</code> and generates
+the HTML reference. The shared Terradue <code>json:create_models</code> task then generates
+<code>src/stage_events_client/models.py</code> from the bundle.</p>
+<p>This keeps schema-defined constraints and descriptions in one authoring
+location. Hand-editing a generated model would create a second contract and
+would be lost on regeneration. Follow the
+<a href="../../how-to/development/">development guide</a> to update the schema and regenerate.</p>
+<p>The current generated models allow extension fields, and some nested structures
+accept generic dictionaries. They validate the represented schema constraints;
+they do not implement every semantic rule of CloudEvents, GeoJSON, or STAC.
+For example, an event ID is not generated or required by the envelope model.
+Applications must account for their receiving service's requirements as well as
+the local model interface.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright Terradue. Licensed under the Apache License, Version 2.0.</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/stage-events-client/" class="fa fa-code-fork" style="color: #fcfcfc"> Terradue/stage-events-client</a>
+        </span>
+    
+    
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

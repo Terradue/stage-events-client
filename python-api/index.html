@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Terradue" /><link rel="canonical" href="https://terradue.github.io/stage-events-client/python-api/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Python API - Stage Events Client</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Python API";
+        var mkdocs_page_input_path = "python-api.md";
+        var mkdocs_page_url = "/stage-events-client/python-api/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Stage Events Client
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/first-event/">Send your first event locally</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/send-from-cli/">Send events from the command line</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/use-python/">Use the Python client</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/handle-errors/">Diagnose failed requests</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/development/">Develop and regenerate the client</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Python API</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#clients">Clients</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#lifecycle-and-configuration-methods">Lifecycle and configuration methods</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#endpoint-functions">Endpoint functions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#responses-and-exceptions">Responses and exceptions</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../reference/events/">Event models</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../c4/class/schemas/openapi.html">OpenAPI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../explanation/architecture/">Events and client architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Stage Events Client</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+      <li class="breadcrumb-item active">Python API</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/stage-events-client/edit/master/docs/python-api.md">Edit on Terradue/stage-events-client</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="python-api-reference">Python API reference</h1>
+<p>Import clients from <code>stage_events_client</code>, event models from
+<code>stage_events_client.models</code>, and sending functions from
+<code>stage_events_client.api.default.send_cloud_event</code>.
+For complete examples, see <a href="../how-to/use-python/">use the Python client</a>.</p>
+<h2 id="clients">Clients</h2>
+<p><code>Client</code> sends unauthenticated requests. <code>AuthenticatedClient</code> adds an
+authentication header when constructing its HTTPX client.</p>
+<table>
+<thead>
+<tr>
+<th>Constructor argument</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base_url</code></td>
+<td>Required</td>
+<td>HTTPX base URL for endpoint paths.</td>
+</tr>
+<tr>
+<td><code>headers</code></td>
+<td>Empty dictionary</td>
+<td>Shared request headers.</td>
+</tr>
+<tr>
+<td><code>cookies</code></td>
+<td>Empty dictionary</td>
+<td>Shared cookies.</td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td><code>None</code></td>
+<td><code>httpx.Timeout</code> or <code>None</code>; the default disables timeouts.</td>
+</tr>
+<tr>
+<td><code>verify_ssl</code></td>
+<td><code>True</code></td>
+<td>Boolean, CA bundle path, or <code>ssl.SSLContext</code>.</td>
+</tr>
+<tr>
+<td><code>follow_redirects</code></td>
+<td><code>False</code></td>
+<td>Follow HTTP redirects.</td>
+</tr>
+<tr>
+<td><code>httpx_args</code></td>
+<td>Empty dictionary</td>
+<td>Additional HTTPX constructor keyword arguments.</td>
+</tr>
+<tr>
+<td><code>raise_on_unexpected_status</code></td>
+<td><code>False</code></td>
+<td>Raise on statuses other than documented 200 and 400.</td>
+</tr>
+</tbody>
+</table>
+<p><code>AuthenticatedClient</code> additionally accepts:</p>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>token</code></td>
+<td>Required</td>
+<td>Credential value.</td>
+</tr>
+<tr>
+<td><code>prefix</code></td>
+<td><code>"Bearer"</code></td>
+<td>Authentication scheme; empty string sends the token alone.</td>
+</tr>
+<tr>
+<td><code>auth_header_name</code></td>
+<td><code>"Authorization"</code></td>
+<td>Header used for authentication.</td>
+</tr>
+</tbody>
+</table>
+<p>The Python API does not load tokens or URLs from environment variables.</p>
+<h3 id="lifecycle-and-configuration-methods">Lifecycle and configuration methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_httpx_client()</code></td>
+<td>Lazily create or return the cached synchronous HTTPX client.</td>
+</tr>
+<tr>
+<td><code>get_async_httpx_client()</code></td>
+<td>Lazily create or return the cached asynchronous HTTPX client.</td>
+</tr>
+<tr>
+<td><code>set_httpx_client(client)</code></td>
+<td>Install a synchronous HTTPX client and return the wrapper.</td>
+</tr>
+<tr>
+<td><code>set_async_httpx_client(async_client)</code></td>
+<td>Install an asynchronous HTTPX client and return the wrapper.</td>
+</tr>
+<tr>
+<td><code>with_headers(headers)</code></td>
+<td>Return a new wrapper with merged headers.</td>
+</tr>
+<tr>
+<td><code>with_cookies(cookies)</code></td>
+<td>Return a new wrapper with merged cookies.</td>
+</tr>
+<tr>
+<td><code>with_timeout(timeout)</code></td>
+<td>Return a new wrapper with the supplied timeout.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>with_*</code> methods also update already-created HTTPX clients on the original
+wrapper. They are not side-effect-free copies. Prefer configuring a client
+before opening its context.</p>
+<p>Use <code>with client:</code> or <code>async with client:</code> to manage connection resources.
+Exiting closes the corresponding HTTPX client. Do not re-enter a closed client;
+create a fresh wrapper. Injected HTTPX clients must supply their own base URL,
+authentication, and HTTP settings because injection bypasses wrapper
+configuration. The wrapper context also manages their lifecycle.</p>
+<h2 id="endpoint-functions">Endpoint functions</h2>
+<p>All arguments are keyword-only. Each function posts a supported CloudEvent with
+<code>Content-Type: application/cloudevents+json</code> and serializes the body using
+<code>model_dump(mode="json")</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Return</th>
+<th>Custom <code>path</code> argument</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sync</code></td>
+<td>Parsed value</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>sync_detailed</code></td>
+<td><code>Response</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>asyncio</code></td>
+<td>Awaitable yielding the parsed value</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>asyncio_detailed</code></td>
+<td>Awaitable yielding <code>Response</code></td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Required</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>client</code></td>
+<td>Yes</td>
+<td>—</td>
+<td><code>Client</code> or <code>AuthenticatedClient</code>.</td>
+</tr>
+<tr>
+<td><code>body</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>One of the nine <a href="../reference/events/#event-data">CloudEvent models</a>.</td>
+</tr>
+<tr>
+<td><code>x_kafka_topic</code></td>
+<td>No</td>
+<td><code>None</code></td>
+<td>Per-request topic header; omitted when <code>None</code>.</td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td>Detailed functions only</td>
+<td><code>/cloud-events</code></td>
+<td>Request path, optionally including a query string.</td>
+</tr>
+</tbody>
+</table>
+<p>The topic is forwarded without local pattern validation. The OpenAPI marks it
+required despite its optional Python signature; see <a href="../reference/events/#routing">routing</a>.</p>
+<h2 id="responses-and-exceptions">Responses and exceptions</h2>
+<p><code>stage_events_client.types.Response</code> contains:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status_code</code></td>
+<td><code>http.HTTPStatus</code>.</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td>Raw response bytes.</td>
+</tr>
+<tr>
+<td><code>headers</code></td>
+<td>HTTP response headers.</td>
+</tr>
+<tr>
+<td><code>parsed</code></td>
+<td>Text, a documented problem model, or <code>None</code>.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Response</th>
+<th>Parsed result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTTP 200</td>
+<td>Response text, including an empty string for an empty body; no JSON decoding.</td>
+</tr>
+<tr>
+<td>HTTP 400</td>
+<td>Validated problem model from <code>eoap_problems_registry</code>.</td>
+</tr>
+<tr>
+<td>Other standard HTTP status, flag disabled</td>
+<td><code>None</code>.</td>
+</tr>
+<tr>
+<td>Other standard HTTP status, flag enabled</td>
+<td>Raises <code>stage_events_client.errors.UnexpectedStatus</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>UnexpectedStatus</code> exposes integer <code>status_code</code> and byte <code>content</code> attributes.
+HTTP 400 is not raised by this flag. Its recognized problem types are:</p>
+<ul>
+<li><code>BadRequest</code></li>
+<li><code>InvalidBodyPropertyFormat</code></li>
+<li><code>InvalidBodyPropertyValue</code></li>
+<li><code>InvalidParameters</code></li>
+<li><code>InvalidRequestHeaderFormat</code></li>
+<li><code>InvalidRequestParameterFormat</code></li>
+<li><code>InvalidRequestParameterValue</code></li>
+<li><code>MissingBodyProperty</code></li>
+<li><code>MissingRequestHeader</code></li>
+<li><code>MissingRequestParameter</code></li>
+</ul>
+<p>Import these response classes from <code>eoap_problems_registry</code>, even though the
+generated models module also contains similarly named classes.</p>
+<p>Transport exceptions propagate from HTTPX, including <code>httpx.TimeoutException</code>
+and <code>httpx.RequestError</code>. Malformed 400 bodies can raise JSON decoding errors,
+<code>TypeError</code>, or Pydantic <code>ValidationError</code>. A nonstandard status not represented
+by <code>http.HTTPStatus</code> raises <code>ValueError</code> while building a detailed response,
+regardless of the unexpected-status flag. No automatic retries are performed.</p>
+<p>See <a href="../how-to/handle-errors/">diagnose failed requests</a> for handling guidance.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../cli/" class="btn btn-neutral float-left" title="CLI"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../reference/events/" class="btn btn-neutral float-right" title="Event models">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright Terradue. Licensed under the Apache License, Version 2.0.</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/stage-events-client/" class="fa fa-code-fork" style="color: #fcfcfc"> Terradue/stage-events-client</a>
+        </span>
+    
+    
+      <span><a href="../cli/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../reference/events/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
