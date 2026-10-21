@@ -47,7 +47,7 @@ dependencies = [
   "attrs>=26.1.0",
   "httpx>=0.28.1",
   "pydantic>=2.13.5",
-  "eoap-problems-registry>=1.7.0",
+  "http-apis-problems-detail>=2",
   "typing-extensions>=4.16.0",
 ]
 
@@ -60,9 +60,9 @@ send-stage-event = "stage_events_client.cli_entrypoint:main"
 
 [project.urls]
 Documentation = "https://terradue.github.io/stage-events-client/"
-Issues = "https://github.com/eoap/stage-events-client/issues"
-Source = "https://github.com/eoap/stage-events-client"
-Changelog = "https://github.com/eoap/stage-events-client/blob/main/CHANGELOG.md"
+Issues = "https://github.com/terradue/stage-events-client/issues"
+Source = "https://github.com/terradue/stage-events-client"
+Changelog = "https://github.com/terradue/stage-events-client/blob/main/CHANGELOG.md"
 
 # ---------------------------------------------------------------------------
 # Versioning and packaging

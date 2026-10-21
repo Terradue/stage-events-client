@@ -19,7 +19,7 @@ from http import HTTPStatus
 from zoneinfo import ZoneInfo
 
 import httpx
-from eoap_problems_registry import BadRequest, MissingRequestHeader, MissingRequestParameter
+from http_apis_problems_detail import BadRequest, MissingRequestHeader, MissingRequestParameter
 from pydantic import ValidationError
 
 from stage_events_client import errors

@@ -18,7 +18,7 @@ from http import HTTPStatus
 from typing import Annotated, Any
 
 import httpx
-from eoap_problems_registry import (
+from http_apis_problems_detail import (
     BadRequest,
     InvalidBodyPropertyFormat,
     InvalidBodyPropertyValue,
