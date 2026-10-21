@@ -19,7 +19,7 @@ from http import HTTPStatus
 from zoneinfo import ZoneInfo
 
 import httpx
-from eoap_problems_registry import BadRequest, MissingRequestHeader, MissingRequestParameter
+from http_apis_problems_detail import BadRequest, MissingRequestHeader, MissingRequestParameter
 from pydantic import ValidationError
 
 from stage_events_client import errors
@@ -87,7 +87,7 @@ class SendCloudEventTests(unittest.TestCase):
 
     def test_sync_parses_documented_problem_response(self) -> None:
         problem = {
-            "type": "https://eoap.github.io/problems-registry/missing-request-header",
+            "type": "https://terradue.github.io/http-apis-problems-detail/missing-request-header",
             "status": 400,
             "title": "Missing request header",
             "detail": "The request is missing an expected HTTP request header.",

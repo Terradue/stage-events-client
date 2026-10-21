@@ -50,7 +50,7 @@ else:
 
 HTTP 400 responses are returned as problem objects, not raised as
 `UnexpectedStatus`. For type-specific handling, import problem classes from
-`eoap_problems_registry`, for example `MissingRequestHeader`; those are the
+`http_apis_problems_detail`, for example `MissingRequestHeader`; those are the
 classes the endpoint parser returns.
 
 Malformed 400 bodies are separate parsing failures: invalid JSON raises

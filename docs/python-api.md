@@ -90,7 +90,7 @@ required despite its optional Python signature; see [routing](reference/events.m
 | Response | Parsed result |
 | --- | --- |
 | HTTP 200 | Response text, including an empty string for an empty body; no JSON decoding. |
-| HTTP 400 | Validated problem model from `eoap_problems_registry`. |
+| HTTP 400 | Validated problem model from `http_apis_problems_detail`. |
 | Other standard HTTP status, flag disabled | `None`. |
 | Other standard HTTP status, flag enabled | Raises `stage_events_client.errors.UnexpectedStatus`. |
 
@@ -108,8 +108,8 @@ HTTP 400 is not raised by this flag. Its recognized problem types are:
 - `MissingRequestHeader`
 - `MissingRequestParameter`
 
-Import these response classes from `eoap_problems_registry`, even though the
-generated models module also contains similarly named classes.
+Import these response classes from `http_apis_problems_detail`. They are no
+longer included in `stage_events_client.models` as of version 1.3.0.
 
 Transport exceptions propagate from HTTPX, including `httpx.TimeoutException`
 and `httpx.RequestError`. Malformed 400 bodies can raise JSON decoding errors,
