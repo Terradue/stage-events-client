@@ -46,7 +46,7 @@ classifiers = [
 dependencies = [
   "attrs>=26.1.0",
   "httpx>=0.28.1",
-  "pydantic>=2.13.5",
+  "pydantic>=2.14.1",
   "http-apis-problems-detail>=2",
   "typing-extensions>=4.16.0",
 ]
