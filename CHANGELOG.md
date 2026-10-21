@@ -7,19 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-### Added
+## [1.3.0] - 2026-10-21
 
 ### Changed
 
-### Deprecated
+- Replaced `eoap-problems-registry` with `http-apis-problems-detail>=2` for HTTP 400 response models. Import problem classes from `http_apis_problems_detail`.
+- Updated OpenAPI error response references and documentation to use the Terradue HTTP API problems registry.
+- Generate models from the source OpenAPI schema instead of the bundled documentation schema to avoid duplicating external problem models.
 
 ### Removed
 
+- Removed `ProblemDetails` and its ten subclasses from `stage_events_client.models`; use the classes provided by `http_apis_problems_detail` for HTTP error responses.
+
 ### Fixed
 
-### Security
+- Corrected package metadata links to point to the Terradue repository.
 
 ## [1.2.0] - 2026-10-09
 
@@ -80,7 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial version
 
-[Unreleased]: https://github.com/Terradue/stage-events-client/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Terradue/stage-events-client/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Terradue/stage-events-client/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Terradue/stage-events-client/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Terradue/stage-events-client/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/Terradue/stage-events-client/compare/v1.0.4...v1.0.5
