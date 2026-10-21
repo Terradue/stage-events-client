@@ -82,7 +82,7 @@ paths:
         '200':
           $ref: '#/components/responses/WebhookOk'
         '400':
-          $ref: 'https://eoap.github.io/problems-registry/openapi.yaml#/components/responses/BadRequest'
+          $ref: 'https://terradue.github.io/http-apis-problems-detail/openapi.yaml#/components/responses/BadRequest'
 
 components:
   securitySchemes:
