@@ -108,8 +108,8 @@ HTTP 400 is not raised by this flag. Its recognized problem types are:
 - `MissingRequestHeader`
 - `MissingRequestParameter`
 
-Import these response classes from `http_apis_problems_detail`, even though the
-generated models module also contains similarly named classes.
+Import these response classes from `http_apis_problems_detail`. They are no
+longer included in `stage_events_client.models` as of version 1.3.0.
 
 Transport exceptions propagate from HTTPX, including `httpx.TimeoutException`
 and `httpx.RequestError`. Malformed 400 bodies can raise JSON decoding errors,

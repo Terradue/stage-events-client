@@ -1,7 +1,7 @@
 # Event model reference
 
 Import event and data models from `stage_events_client.models`. These Pydantic
-v2 classes are generated from the schema bundle. The tables describe their
+v2 classes are generated from `schemas/openapi.yaml`. The tables describe their
 current Python validation behavior. The [OpenAPI reference](../c4/class/schemas/openapi.html)
 describes the HTTP contract.
 

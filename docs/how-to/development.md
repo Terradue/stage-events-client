@@ -35,7 +35,7 @@ files; inspect its diff before committing.
 
 Read `AGENTS.md` and `Taskfile.yaml` before editing. Modify the authoritative
 `schemas/openapi.yaml`, including descriptions and validation constraints, then
-run these commands in order:
+refresh the documentation and models:
 
 ```console
 task generate_openapi_doc
@@ -43,10 +43,11 @@ task generate_models
 ```
 
 The first task refreshes both the bundled schema and HTML reference. The second
-uses that bundle as input to `json:create_models`, writes
+passes `schemas/openapi.yaml` directly to `json:create_models`, writes
 `src/stage_events_client/models.py`, and runs the configured Ruff fixes.
-It does not first refresh the schema bundle, so do not skip the first command
-after changing the source schema.
+The tasks are independent: model generation does not require the documentation
+bundle. Run both after changing an event contract to keep the models and
+published reference consistent.
 
 This repository does not pass a custom base class, additional imports, or custom
 templates to `create_models`; the shared task supplies generation options.

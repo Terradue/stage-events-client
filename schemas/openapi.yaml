@@ -103,11 +103,13 @@ components:
       description: |
         The named resource that serves as a feed for messages.
 
-        Pattern is `{{workflow.namespace}}.{{workflow.uid}}.(\d+[hmsd]\.calendar|prepared|completed|failed|piped|staged|ordered)`, where:
+        Pattern is `{{workflow.namespace}}.{{workflow.uid}}.(\d+[hmsd]\.calendar|prepared|submitted|completed|failed|piped|staged|dismissed|ordered)`, where:
 
         | Topic                                                         | Semantic                                                                                            |
         |---------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
         | `{{workflow.namespace}}.{{workflow.uid}}.\d+[hmsd].calendar`  | CWL and input parameters are wrapped w/ stage-in/out steps                                          |
+        | `{{workflow.namespace}}.{{workflow.uid}}.submitted`           | Workflow submitted                                                                                |
+        | `{{workflow.namespace}}.{{workflow.uid}}.dismissed`           | Workflow dismissed                                                                                |
         | `{{workflow.namespace}}.{{workflow.uid}}.prepared`            | CWL and input parameters are wrapped w/ stage-in/out steps                                          |
         | `{{workflow.namespace}}.{{workflow.uid}}.completed`           | Workflow completed its life cycle and CommandLineTools/Calrissian stderr/out logs are collected     |
         | `{{workflow.namespace}}.{{workflow.uid}}.failed`              | Workflow failed during its life cycle and CommandLineTools/Calrissian stderr/out logs are collected |

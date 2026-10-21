@@ -72,7 +72,8 @@ downstream workflow completion.
 `schemas/openapi.yaml` defines the API, including references to shared schemas.
 The Taskfile bundles it into `docs/c4/class/schemas/openapi.yaml` and generates
 the HTML reference. The shared Terradue `json:create_models` task then generates
-`src/stage_events_client/models.py` from the bundle.
+`src/stage_events_client/models.py` directly from `schemas/openapi.yaml`.
+Model generation does not depend on the documentation bundle.
 
 This keeps schema-defined constraints and descriptions in one authoring
 location. Hand-editing a generated model would create a second contract and
