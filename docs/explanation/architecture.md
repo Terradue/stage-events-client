@@ -59,7 +59,7 @@ application. Async applications use the equivalent HTTPX async transport.
 Model validation catches structural mistakes before transmission. Transport
 errors describe failures in communication. HTTP responses describe what the
 service returned, with 400 bodies validated against problem models from
-`eoap_problems_registry`. These are different failure boundaries and call for
+`http_apis_problems_detail`. These are different failure boundaries and call for
 different handling.
 
 The convenience functions return only the parsed value. Detailed functions
