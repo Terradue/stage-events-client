@@ -6,7 +6,14 @@ optional `send-stage-event` command for shell scripts and workflow steps.
 The package provides validated models for nine event types and sends them as
 JSON with the `application/cloudevents+json` content type.
 
-Python 3.10 or newer is required. Sending to a deployed service requires its
+!!! warning "Python support changes in v1.4.0"
+
+    Starting with v1.4.0, Python 3.10 is no longer supported, and Python 3.15
+    support has been added. Python 3.10 reached end of life on
+    [October 1, 2026](https://peps.python.org/pep-0619/).
+    Upgrade to Python 3.11 or newer to use v1.4.0 and later.
+
+Python 3.11 or newer is required. Sending to a deployed service requires its
 endpoint URL and, when enabled, a bearer token. The introductory tutorial runs
 locally without a service or credentials.
 
