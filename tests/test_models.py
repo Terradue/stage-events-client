@@ -14,7 +14,7 @@
 
 import json
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import ValidationError
 
@@ -43,7 +43,7 @@ class CloudEventModelTests(unittest.TestCase):
         )
 
         self.assertEqual(event.type, "submitted")
-        self.assertEqual(event.data.time, datetime(2026, 7, 17, 12, tzinfo=timezone.utc))
+        self.assertEqual(event.data.time, datetime(2026, 7, 17, 12, tzinfo=UTC))
         self.assertEqual(event.model_dump()["specversion"], "1.0")
 
     def test_source_and_subject_must_have_three_colon_separated_parts(self) -> None:

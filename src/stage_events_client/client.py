@@ -14,11 +14,10 @@
 
 import ssl
 from types import TracebackType
-from typing import Any
+from typing import Any, Self
 
 import httpx
 from attrs import define, evolve, field
-from typing_extensions import Self
 
 
 @define
