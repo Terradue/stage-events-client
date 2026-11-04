@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Terradue" /><link rel="canonical" href="https://terradue.github.io/stage-events-client/cli/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>CLI - Stage Events Client</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "CLI";
+        var mkdocs_page_input_path = "cli.md";
+        var mkdocs_page_url = "/stage-events-client/cli/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Stage Events Client
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/first-event/">Send your first event locally</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/send-from-cli/">Send events from the command line</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/use-python/">Use the Python client</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/handle-errors/">Diagnose failed requests</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../how-to/development/">Develop and regenerate the client</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">CLI</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#invocation">Invocation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#options">Options</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment variables</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#output-and-exit-status">Output and exit status</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../python-api/">Python API</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../reference/events/">Event models</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../c4/class/schemas/openapi.html">OpenAPI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../explanation/architecture/">Events and client architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Stage Events Client</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+      <li class="breadcrumb-item active">CLI</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/stage-events-client/edit/master/docs/cli.md">Edit on Terradue/stage-events-client</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cli-reference">CLI reference</h1>
+<p>The optional <code>stage-events-client[cli]</code> extra provides <code>send-stage-event</code>.
+For complete examples, see <a href="../how-to/send-from-cli/">send events from the command line</a>.</p>
+<h2 id="invocation">Invocation</h2>
+<pre><code class="language-text">send-stage-event [--version] [-h | --help]
+send-stage-event COMMAND URL [OPTIONS]
+</code></pre>
+<p><code>URL</code> must be an absolute HTTP or HTTPS URL with no fragment. Its path and query
+string are preserved; an empty path becomes <code>/</code>. No endpoint path is appended.</p>
+<h2 id="commands">Commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Event model</th>
+<th>Event type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calendar</code></td>
+<td><code>CalendarCloudEvent</code></td>
+<td><code>calendar-event</code></td>
+</tr>
+<tr>
+<td><code>submitted</code></td>
+<td><code>SubmittedCloudEvent</code></td>
+<td><code>submitted</code></td>
+</tr>
+<tr>
+<td><code>dismissed</code></td>
+<td><code>DismissedCloudEvent</code></td>
+<td><code>dismissed</code></td>
+</tr>
+<tr>
+<td><code>prepared</code></td>
+<td><code>PreparedCloudEvent</code></td>
+<td><code>prepared</code></td>
+</tr>
+<tr>
+<td><code>completed</code></td>
+<td><code>CompletedCloudEvent</code></td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td><code>FailedCloudEvent</code></td>
+<td><code>failed</code></td>
+</tr>
+<tr>
+<td><code>piped</code></td>
+<td><code>PipedCloudEvent</code></td>
+<td><code>piped</code></td>
+</tr>
+<tr>
+<td><code>staged</code></td>
+<td><code>StagedCloudEvent</code></td>
+<td><code>staged</code></td>
+</tr>
+<tr>
+<td><code>ordered</code></td>
+<td><code>OrderedCloudEvent</code></td>
+<td><code>ordered</code></td>
+</tr>
+</tbody>
+</table>
+<p>All commands share the options below. Each validates its data against the
+corresponding <a href="../reference/events/#event-data">event data model</a>.</p>
+<h2 id="options">Options</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Required</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--source TEXT</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>Three nonempty colon-separated components.</td>
+</tr>
+<tr>
+<td><code>--subject TEXT</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>Three nonempty colon-separated components.</td>
+</tr>
+<tr>
+<td><code>--data JSON\|@FILE\|-</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>Data object as inline JSON, a UTF-8 JSON file, or stdin.</td>
+</tr>
+<tr>
+<td><code>--partition-key TEXT</code></td>
+<td>No</td>
+<td>Subject</td>
+<td>Grouping key; an empty value also falls back to the subject.</td>
+</tr>
+<tr>
+<td><code>--x-kafka-topic TEXT</code></td>
+<td>No</td>
+<td>Omitted</td>
+<td>Per-request topic header; see the contract distinction below.</td>
+</tr>
+<tr>
+<td><code>--token TEXT</code></td>
+<td>No</td>
+<td><code>STAGE_EVENTS_TOKEN</code></td>
+<td>Token without <code>Bearer</code>; explicit option takes precedence.</td>
+</tr>
+<tr>
+<td><code>--timeout FLOAT</code></td>
+<td>No</td>
+<td><code>30.0</code></td>
+<td>Positive HTTPX timeout in seconds.</td>
+</tr>
+<tr>
+<td><code>--verify-ssl / --no-verify-ssl</code></td>
+<td>No</td>
+<td>Verification enabled</td>
+<td>Whether to verify the server TLS certificate.</td>
+</tr>
+<tr>
+<td><code>-h / --help</code></td>
+<td>No</td>
+<td>—</td>
+<td>Show help and exit.</td>
+</tr>
+</tbody>
+</table>
+<p><code>--data</code> must resolve to an object, not an array or scalar. It contains the
+payload fields, not the CloudEvent envelope. The command determines <code>type</code>,
+<code>specversion</code> defaults to <code>1.0</code>, and <code>datacontenttype</code> to <code>application/json</code>.
+There are no CLI options for an event ID, arbitrary envelope extensions,
+custom authentication schemes, redirect following, or a CA bundle path.</p>
+<p><code>X-Kafka-Topic</code> is optional in the CLI but required by the checked-in OpenAPI
+contract. Its pattern is not validated locally. See <a href="../reference/events/#routing">routing</a>.
+TLS verification should remain enabled for production requests.</p>
+<h2 id="environment-variables">Environment variables</h2>
+<p><code>STAGE_EVENTS_TOKEN</code> is the CLI's token fallback. A nonempty token causes the
+request to carry <code>Authorization: Bearer TOKEN</code>. Without one, the CLI uses the
+unauthenticated client. There is no CLI environment-variable setting for the
+endpoint URL or topic.</p>
+<h2 id="output-and-exit-status">Output and exit status</h2>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Output</th>
+<th>Exit status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTTP 200</td>
+<td>Response text on stdout when nonempty</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td>Usage, URL, JSON, file-input, or option error</td>
+<td>Diagnostic on stderr</td>
+<td><code>2</code></td>
+</tr>
+<tr>
+<td>Event model validation error</td>
+<td>Validation diagnostic on stderr</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>HTTPX failure or unexpected HTTP status</td>
+<td>Diagnostic on stderr</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td>Valid documented HTTP 400 problem</td>
+<td>Formatted problem JSON on stderr</td>
+<td><code>1</code></td>
+</tr>
+</tbody>
+</table>
+<p>The CLI enables <code>raise_on_unexpected_status=True</code>. Even other 2xx statuses,
+including 201 and 204, fail before the CLI's success branch. Malformed HTTP 400
+bodies can raise unhandled parsing exceptions rather than a formatted diagnostic.
+See <a href="../how-to/handle-errors/">diagnose failed requests</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../reference/" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../python-api/" class="btn btn-neutral float-right" title="Python API">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright Terradue. Licensed under the Apache License, Version 2.0.</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/stage-events-client/" class="fa fa-code-fork" style="color: #fcfcfc"> Terradue/stage-events-client</a>
+        </span>
+    
+    
+      <span><a href="../reference/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../python-api/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

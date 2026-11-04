@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Terradue" /><link rel="canonical" href="https://terradue.github.io/stage-events-client/how-to/use-python/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Use the Python client - Stage Events Client</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Use the Python client";
+        var mkdocs_page_input_path = "how-to/use-python.md";
+        var mkdocs_page_url = "/stage-events-client/how-to/use-python/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Stage Events Client
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../tutorials/first-event/">Send your first event locally</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">How-to guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../send-from-cli/">Send events from the command line</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Use the Python client</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#send-an-authenticated-event">Send an authenticated event</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#use-a-custom-endpoint">Use a custom endpoint</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#send-asynchronously">Send asynchronously</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configure-http">Configure HTTP</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../handle-errors/">Diagnose failed requests</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../development/">Develop and regenerate the client</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../cli/">CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../python-api/">Python API</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../reference/events/">Event models</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../c4/class/schemas/openapi.html">OpenAPI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Explanation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../explanation/architecture/">Events and client architecture</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Stage Events Client</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">How-to guides</li>
+      <li class="breadcrumb-item active">Use the Python client</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Terradue/stage-events-client/edit/master/docs/how-to/use-python.md">Edit on Terradue/stage-events-client</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="use-the-python-client-in-an-application">Use the Python client in an application</h1>
+<p>Install <code>stage-events-client</code> and obtain your service URL and bearer token.
+The examples below read configuration from <code>STAGE_EVENTS_BASE_URL</code> and
+<code>STAGE_EVENTS_TOKEN</code>. These are explicit application reads: the Python client
+does not load environment variables itself.</p>
+<h2 id="send-an-authenticated-event">Send an authenticated event</h2>
+<pre><code class="language-python">import os
+
+import httpx
+
+from stage_events_client import AuthenticatedClient
+from stage_events_client.api.default import send_cloud_event
+from stage_events_client.models import SubmittedCloudEvent, SubmittedData
+
+event = SubmittedCloudEvent(
+    source=&quot;workflows:example-process:submit&quot;,
+    subject=&quot;workflows:demo-001:example-workflow&quot;,
+    partitionkey=&quot;workflows:demo-001:example-workflow&quot;,
+    data=SubmittedData(namespace=&quot;workflows&quot;),
+)
+client = AuthenticatedClient(
+    base_url=os.environ[&quot;STAGE_EVENTS_BASE_URL&quot;],
+    token=os.environ[&quot;STAGE_EVENTS_TOKEN&quot;],
+    timeout=httpx.Timeout(30.0),
+    raise_on_unexpected_status=True,
+)
+
+with client:
+    response = send_cloud_event.sync_detailed(
+        client=client,
+        body=event,
+        x_kafka_topic=&quot;workflows.demo-001.submitted&quot;,
+    )
+
+print(response.status_code)
+print(response.parsed)
+</code></pre>
+<p>Set the base URL to the service origin, for example <code>https://events.example.com</code>.
+The default request path is <code>/cloud-events</code>. For an unauthenticated service,
+construct <code>Client</code> without <code>token</code> instead.</p>
+<p>A returned response can represent an error: check its status using the
+<a href="../handle-errors/">error-handling guide</a>. The client does not retry requests.</p>
+<h2 id="use-a-custom-endpoint">Use a custom endpoint</h2>
+<p>Pass <code>path="/hooks/cloud-events"</code> to <code>sync_detailed</code> or <code>asyncio_detailed</code>.
+The convenience functions <code>sync</code> and <code>asyncio</code> do not accept <code>path</code>.
+If using a base URL with an API prefix, check the final HTTPX URL to avoid
+duplicating that prefix. The CLI accepts a complete URL instead.</p>
+<h2 id="send-asynchronously">Send asynchronously</h2>
+<p>Use the same <code>event</code> constructed above with a fresh client:</p>
+<pre><code class="language-python">import asyncio
+
+
+async def main() -&gt; None:
+    client = AuthenticatedClient(
+        base_url=os.environ[&quot;STAGE_EVENTS_BASE_URL&quot;],
+        token=os.environ[&quot;STAGE_EVENTS_TOKEN&quot;],
+        timeout=httpx.Timeout(30.0),
+        raise_on_unexpected_status=True,
+    )
+    async with client:
+        response = await send_cloud_event.asyncio_detailed(
+            client=client,
+            body=event,
+            x_kafka_topic=&quot;workflows.demo-001.submitted&quot;,
+        )
+    print(response.status_code, response.parsed)
+
+
+asyncio.run(main())
+</code></pre>
+<p>In an application with an existing event loop, await <code>main()</code> instead of calling
+<code>asyncio.run</code>. Keep a client context open for multiple sends to reuse its HTTP
+connection pool. Exiting closes the underlying HTTPX client; create a fresh
+client for a later context. Use separate instances for sync and async work.</p>
+<h2 id="configure-http">Configure HTTP</h2>
+<p>Supply shared headers, cookies, a timeout, or redirect handling at construction.
+The Python default <code>timeout=None</code> disables HTTPX timeouts, so set an explicit
+timeout for application requests. Redirect following defaults to <code>False</code>.</p>
+<p>For a private certificate authority, build an SSL context:</p>
+<pre><code class="language-python">import ssl
+
+client = AuthenticatedClient(
+    base_url=os.environ[&quot;STAGE_EVENTS_BASE_URL&quot;],
+    token=os.environ[&quot;STAGE_EVENTS_TOKEN&quot;],
+    headers={&quot;X-Correlation-ID&quot;: &quot;demo-001&quot;},
+    timeout=httpx.Timeout(30.0),
+    verify_ssl=ssl.create_default_context(cafile=&quot;/path/to/ca-bundle.pem&quot;),
+)
+</code></pre>
+<p>Additional HTTPX constructor settings, such as <code>proxy</code> or <code>transport</code>, can be
+passed in <code>httpx_args</code>. Do not repeat arguments already supplied by the wrapper,
+such as <code>timeout</code>, inside <code>httpx_args</code>.</p>
+<p>To inject an existing HTTPX client, use <code>set_httpx_client</code> or
+<code>set_async_httpx_client</code>. Configure the base URL, authentication headers, timeout,
+and TLS directly on that instance; injection bypasses the wrapper's settings,
+including automatic bearer authentication. Entering and exiting the wrapper's
+context also enters and closes the injected client.</p>
+<p>See the <a href="../../python-api/">Python reference</a> for defaults and method behavior.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../send-from-cli/" class="btn btn-neutral float-left" title="Send events from the command line"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../handle-errors/" class="btn btn-neutral float-right" title="Diagnose failed requests">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright Terradue. Licensed under the Apache License, Version 2.0.</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Terradue/stage-events-client/" class="fa fa-code-fork" style="color: #fcfcfc"> Terradue/stage-events-client</a>
+        </span>
+    
+    
+      <span><a href="../send-from-cli/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../handle-errors/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
