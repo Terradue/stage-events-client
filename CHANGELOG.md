@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `FeatureCollection` schema relaxed for `ordered`, `staged` and `piped` events data
+- Dismissed Python 3.10 support since it reached EOL on October 1, 2026
+- Added Python 3.15 support
 
 ### Added
 
