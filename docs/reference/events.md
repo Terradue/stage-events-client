@@ -80,22 +80,36 @@ to avoid shadowing Python's built-in exception class. It requires a URL-valued
 
 ### GeoJSON payloads
 
-The generated module includes `FeatureCollection`, `Feature`, `Point`,
-`LineString`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, and
-`GeometryCollection`. Coordinate lengths and geometry literals have generated
-constraints. A `Feature` requires `properties` and `geometry` keys, although
-both may be null.
+!!! warning "Payload preservation in versions up to and including 1.3.0"
 
-`FeatureCollection.features` also accepts dictionaries, so acceptance of a
-collection does not guarantee that every feature has passed strict geometry
-validation. These models do not provide complete STAC or geospatial topology
-validation.
+    `FeatureCollection.features` could convert STAC Item and GeoJSON Feature
+    dictionaries into generated `Feature` and geometry models. Validation could
+    coerce values (for example, integer coordinates into floats), and serialization
+    could add default fields such as `geometry.bbox: null`. Accepting a dictionary
+    did not guarantee that its JSON content would be preserved. Upgrade to 1.4.0
+    or later for the preservation behavior described below.
+
+Since 1.4.0, `FeatureCollection.features` accepts STAC Item and GeoJSON Feature
+JSON objects as dictionaries. Their nested geometry, properties, assets, links,
+and custom fields remain JSON data, without conversion into geometry models.
+Validation and serialization preserve explicitly supplied nulls and numeric
+types without adding defaults or removing fields inside each feature.
+
+The generated module no longer provides `Feature` or the individual geometry
+models. Supply feature dictionaries directly. These payloads are not validated
+against STAC, GeoJSON geometry, or geospatial topology rules. Preservation refers
+to JSON content, not original whitespace or byte formatting.
 
 ## Serialization
 
 The endpoint sends `event.model_dump(mode="json")`. Datetimes and enums become
 JSON-compatible values. Default values, `None` values, and allowed extra fields
 are included; the sender does not use `exclude_none` or `exclude_unset`.
+
+The event envelope is serialized around the preserved feature dictionaries.
+Envelope defaults do not add fields inside those dictionaries. Do not apply a
+global `exclude_none=True` as a workaround for older versions: it can remove
+explicit nulls from model fields and cannot undo coercion during validation.
 
 ## Routing
 
