@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-04
+
+### Changed
+
+- `FeatureCollection` schema relaxed for `ordered`, `staged` and `piped` events data
+- Dismissed Python 3.10 support since it reached EOL on October 1, 2026
+- Added Python 3.15 support
+
+### Added
+
+- Describe the change.
+
 ## [1.3.0] - 2026-10-21
 
 ### Changed
@@ -82,7 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial version
 
-[Unreleased]: https://github.com/Terradue/stage-events-client/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/Terradue/stage-events-client/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Terradue/stage-events-client/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Terradue/stage-events-client/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Terradue/stage-events-client/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Terradue/stage-events-client/compare/v1.0.5...v1.1.0
