@@ -317,7 +317,7 @@ check = [
 # Preserve editable-install test extras and uv's local wheel resolution.
 [project.optional-dependencies]
 cli = [
-  "click>=8.5.0,<9",
+  "click>=8.5.1,<9",
 ]
 test = [
   "pytest>=9.2.0,<10",
